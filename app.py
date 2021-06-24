@@ -16,10 +16,7 @@ ALLOWED_EXTENSIONS = { 'png', 'jpg', 'jpeg', }
 app = Flask(__name__)
 pool_size=20  
 max_overflow=0
-if params['local_server']:
-    app.config['SQLALCHEMY_DATABASE_URI'] = params['local_uri']
-else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = params['prod_uri']
+app.config['SQLALCHEMY_DATABASE_URI'] = params['prod_uri']
 
 app.config['SECRET_KEY'] = "sending messages"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -391,4 +388,4 @@ def deletenews(article):
 
 if __name__ == '__main__':
    db.create_all()
-   app.run(debug=False)
+   app.run(debug=True)
