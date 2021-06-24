@@ -272,14 +272,15 @@ def addnews():
 def news(article=None):
     owner = False
     if article:
-        id = escape(session['id_no'])
-        User = Profile_info.query.all()
-        for user in User:
+        if 'id_no' in session:  
+          id = escape(session['id_no'])
+          User = Profile_info.query.all()
+          for user in User:
             if user.ID_Number == id:
                 user = user.ID_Number
                 break
 
-        if request.method == 'POST':
+          if request.method == 'POST':
             read = request.form['read']
             id = escape(session['id_no'])
             User = Profile_info.query.all()
@@ -302,9 +303,12 @@ def news(article=None):
            page = int(page)
            Article = News.query.filter_by(News_ID = article).first()
            if Article:
-             if Article.User_ID == user:
+             if 'id_no' in session:   
+              if Article.User_ID == user:
                owner = True
-             return render_template('news.html',Article= Article,Owner = owner)
+             else:
+                 unknow = False
+             return render_template('news.html',Article= Article,Owner = owner,Unknow = unknow)
            Article = News.query.filter_by(Tag = article).all()
            if Article:
               last = math.ceil(len(Article)/int(No_post))
@@ -387,4 +391,4 @@ def deletenews(article):
 
 if __name__ == '__main__':
    db.create_all()
-   app.run()
+   app.run(debug=False)
