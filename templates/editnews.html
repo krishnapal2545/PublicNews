@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="profilestyle.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script src="https://kit.fontawesome.com/6ad0a05750.js" crossorigin="anonymous"></script>
+    <title style="font-family: Georgia, 'Times New Roman', Times, serif;">Public NEWS</title>
+    <link rel="icon" href="{{ url_for('static',filename='icon.png')}}" type="image/icon type">
+
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+    <a class="nav-link" onclick="goBack()" style="color:black;cursor:pointer; text-decoration:none;"> <i class="fas fa-chevron-left">GO Back</i></a>
+
+    <div class="container">
+        <main>
+            <div class="py-5 text-center">
+                <img class="d-block mx-auto mb-4" src="{{ url_for('static',filename='icon.png')}}" alt="">
+                <h2>Latest NEWS</h2>
+                <p class="lead">Add the Information of Latest NEWS Add thumbnail image link .</p>
+            </div>
+                <div class="col-md-7 col-lg-8">
+                    <h4 class="mb-3">NEWS INFORMATION</h4>
+                    <form class="needs-validation" novalidate method="POST">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="title" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="title" name="title" placeholder="News Title" value="{{Article.Title}}" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="username" class="form-label">Thumbnail Image Link</label>
+                                <div class="input-group has-validation">
+                                    <input type="text" value="{{Article.Thumbnail}}" class="form-control"name="thumbnail" id="thumbnail" placeholder="Thumbnail Link"
+                                        required>
+                                    <div class="invalid-feedback">
+                                        Thumbnail Image Link Required
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label for="address" class="form-label">Country</label>
+                                <input type="text" value="{{Article.Location}}" class="form-control"name="location" id="country" placeholder="Country of which the news is"
+                                    required>
+                                <div class="invalid-feedback">
+                                    Please Valide Country.
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <label for="tag" class="form-label">News Section</label>
+                                <select class="form-select" id="tag" name="tag" required>
+                                    <option value="Technology">Technology</option>
+                                    <option>Culture</option>
+                                    <option>Buisness</option>
+                                    <option>Politics</option>
+                                    <option>Science</option>
+                                    <option>Health</option>
+                                    <option>Travel</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="discrip" class="form-label">Description</label>
+                                <textarea type="text" class="form-control" id="discrip" name="discrip" placeholder="Country of which the news is"
+                                    required style="resize: none; height:200px;">{{Article.Description}}</textarea>
+                                <div class="invalid-feedback">
+                                    Please Valide Discription.
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+                        <button class="w-100 btn btn-primary btn-lg" type="submit">Upldate NEWS </button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        function goBack() {
+          window.history.back();
+        }
+        </script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+</body>
+
+</html>
