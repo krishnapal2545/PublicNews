@@ -1,7 +1,6 @@
 import json
 from werkzeug.utils import secure_filename
 import os
-from sqlalchemy.orm import relationship , backref
 from flask import Flask , render_template , request , redirect , url_for , flash , session
 from markupsafe import escape
 import string,random , datetime , math
@@ -16,6 +15,10 @@ ALLOWED_EXTENSIONS = { 'png', 'jpg', 'jpeg', }
 app = Flask(__name__)
 pool_size=20  
 max_overflow=0
+# if params['local_server']:
+#     app.config['SQLALCHEMY_DATABASE_URI'] = params['local_uri']
+# else:
+#     app.config['SQLALCHEMY_DATABASE_URI'] = params['prod_uri']
 app.config['SQLALCHEMY_DATABASE_URI'] = params['prod_uri']
 
 app.config['SECRET_KEY'] = "sending messages"
@@ -81,6 +84,7 @@ class Contact(db.Model):
 def home():
     No_post = params['no_of_post']
     Article = News.query.all()
+    Article.reverse()
     last = math.ceil( len(Article)/int(No_post))
     page = request.args.get('page')
     if (not str(page).isnumeric()):
@@ -144,14 +148,8 @@ def login_register():
 @app.route('/profile', methods = ['GET','POST'])
 def profile(user_id=None):
     if 'id_no' in session :
-        id_no = escape(session['id_no'])
-        User = Profile_info.query.all()
+        id_no =str(escape(session['id_no']))
         otheruser = False
-        for user in User:
-            if user.ID_Number == id_no:
-                id_no = user.ID_Number
-                break
-
         if user_id: 
             if id_no == user_id :
               otheruser = False
@@ -159,16 +157,11 @@ def profile(user_id=None):
               otheruser = True
               id_no = user_id
 
-        for user in User:
-            if user.ID_Number == id_no:
-                id_no = user.ID_Number
-                break
-
-        User = Profile_info.query.filter_by(ID_Number = user.ID_Number).first()
-        followed = Followed.query.filter_by(User_ID = user.ID_Number)
-        follower = Followed.query.filter_by(Followed_ID = user.ID_Number)
-        article = News.query.filter_by(User_ID = user.ID_Number).all()
-        reading = Reading_list.query.filter_by(User_ID = user.ID_Number).all()
+        User = Profile_info.query.filter_by(ID_Number = id_no).first()
+        followed = Followed.query.filter_by(User_ID = id_no)
+        follower = Followed.query.filter_by(Followed_ID = id_no)
+        article = News.query.filter_by(User_ID = id_no).all()
+        reading = Reading_list.query.filter_by(User_ID = id_no).all()
         alluser = Profile_info.query.all()
         allnews = News.query.all()
         if request.method == 'POST':
@@ -183,7 +176,7 @@ def profile(user_id=None):
             if f :
               filename = secure_filename(f.filename)
               f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            User = Profile_info.query.filter_by(ID_Number = user.ID_Number).first()
+            User = Profile_info.query.filter_by(ID_Number = id_no).first()
             if name :  User.Name = name
             if country :  User.Country = country
             if phone_no :  User.Phone_no = phone_no
@@ -191,30 +184,24 @@ def profile(user_id=None):
             if bio :  User.Bio = bio
             if f : User.Profile_img = filename
             db.session.commit()
-          elif request.form['fol']== '1':
+          if request.form['fol']== '1':
             follow = request.form['follow']
-            id = escape(session['id_no'])
-            User = Profile_info.query.all()
-            for user in User:
-              if user.ID_Number == id:
-                user = user.ID_Number
-                break
-
+            id = str(escape(session['id_no']))
+            print(request.form['op'])
             if request.form['op'] == 'Follow':
-              if Followed.query.filter_by(User_ID = user,Followed_ID = follow).first():
+              if Followed.query.filter_by(User_ID = id,Followed_ID = follow).first():
                   pass
               elif follow:
-                  Create = Followed(User_ID = user , Followed_ID = follow)
+                  Create = Followed(User_ID = id, Followed_ID = follow)
                   db.session.add(Create)
                   db.session.commit()
 
-            elif request.form['op'] == 'Unfollow' :
-              if Followed.query.filter_by(User_ID = user,Followed_ID = follow).first():
-                  Followed.query.filter_by(User_ID = user,Followed_ID = follow).delete()
+            if request.form['op'] == 'Unfollow' :
+              if Followed.query.filter_by(User_ID = id,Followed_ID = follow).first():
+                  Followed.query.filter_by(User_ID = id,Followed_ID = follow).delete()
                   db.session.commit()
               else:
                   pass
-
 
         return render_template('profile.html',User = User,Article = article,otheruser=otheruser,Follower = follower,Followed=followed,Reading = reading,Alluser = alluser,Allnews = allnews)
     else:
@@ -241,20 +228,14 @@ def addnews():
                    continue
                else :
                    break
-            id_no = escape(session['id_no'])           
-            User = Profile_info.query.all()
-            for user in User:
-              if user.ID_Number == id_no:
-                user = user.ID_Number
-                break
-
+            id_no = str(escape(session['id_no']))           
             title = request.form['title']
             thumb = request.form['thumbnail']
             locat = request.form['location']
             tag = request.form['tag']
             descrip = request.form['discrip']
             date1 = datetime.date.today()
-            create = News(User_ID = user,News_ID = news_id,Thumbnail = thumb,Location = locat,Tag=tag,Description = descrip,Title = title,Date =date1)
+            create = News(User_ID = id_no,News_ID = news_id,Thumbnail = thumb,Location = locat,Tag=tag,Description = descrip,Title = title,Date =date1)
             db.session.add(create)
             db.session.commit()
             return redirect(url_for('profile'))
@@ -268,28 +249,16 @@ def addnews():
 @app.route('/news/<article>',methods=['GET','POST'])
 def news(article=None):
     owner = False
+    unknow = True
     if article:
         if 'id_no' in session:  
-          id = escape(session['id_no'])
-          User = Profile_info.query.all()
-          for user in User:
-            if user.ID_Number == id:
-                user = user.ID_Number
-                break
-
+          id = str(escape(session['id_no']))
           if request.method == 'POST':
             read = request.form['read']
-            id = escape(session['id_no'])
-            User = Profile_info.query.all()
-            for user in User:
-              if user.ID_Number == id:
-                user = user.ID_Number
-                break
-
-            if Reading_list.query.filter_by(User_ID = user,News_ID = read).first():
+            if Reading_list.query.filter_by(User_ID = id,News_ID = read).first():
                 pass
             elif read:
-                Create = Reading_list(User_ID = user , News_ID = read)
+                Create = Reading_list(User_ID = id, News_ID = read)
                 db.session.add(Create)
                 db.session.commit()
         try: 
@@ -300,14 +269,15 @@ def news(article=None):
            page = int(page)
            Article = News.query.filter_by(News_ID = article).first()
            if Article:
-             if 'id_no' in session:   
-              if Article.User_ID == user:
-               owner = True
-             else:
-                 unknow = False
-             return render_template('news.html',Article= Article,Owner = owner,Unknow = unknow)
+              if 'id_no' in session: 
+                if Article.User_ID == id:
+                  owner = True
+              else:
+                  unknow = False
+              return render_template('news.html',Article= Article,Owner = owner,Unknow = unknow)
            Article = News.query.filter_by(Tag = article).all()
            if Article:
+              Article.reverse()
               last = math.ceil(len(Article)/int(No_post))
               Article = Article[(page-1) * int(No_post) : (page-1) * int(No_post) +int(No_post) ]
               if page == 1:
@@ -339,15 +309,13 @@ def editnews(article=None):
             locat = request.form['location']
             tag = request.form['tag']
             descrip = request.form['discrip']
-            date1 = datetime.date.today()
             Create = News.query.filter_by(News_ID=article).first()
             if Create:
                 if title : Create.Title = title
-                if title : Create.Thumbnail = thumb
-                if title : Create.Location = locat
-                if title : Create.Tag = tag
-                if title : Create.Description = descrip
-                if title : Create.Date = date1
+                if thumb : Create.Thumbnail = thumb
+                if locat : Create.Location = locat
+                if tag : Create.Tag = tag
+                if descrip : Create.Description = descrip
                 db.session.commit()
             return redirect(f'/news/{article}')
         rticle = News.query.filter_by(News_ID = article).first()
@@ -370,13 +338,8 @@ def contact():
 @app.route('/news/delete/<article>')
 def deletenews(article):
     if 'id_no' in session :
-        id_no = escape(session['id_no'])
-        User = Profile_info.query.all()
-        for user in User:
-              if user.ID_Number == id_no:
-                user = user.ID_Number
-                break
-        Article = News.query.filter_by(News_ID = article,User_ID = user).first()
+        id_no = str(escape(session['id_no']))
+        Article = News.query.filter_by(News_ID = article,User_ID = id_no).first()
         if Article:
             News.query.filter_by(News_ID = article).delete()
             db.session.commit()
@@ -388,4 +351,4 @@ def deletenews(article):
 
 if __name__ == '__main__':
    db.create_all()
-   app.run(debug=True)
+   app.run(debug=False)

@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="profilestyle.css">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <script src="https://kit.fontawesome.com/6ad0a05750.js" crossorigin="anonymous"></script>
@@ -19,8 +18,8 @@
 
     <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
 
-        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="/"
-            style="font-family: Georgia, 'Times New Roman', Times, serif;">Public NEWS</a>
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" onclick="goBack()"
+            style="color: ivory;cursor:pointer;font-family: Georgia, 'Times New Roman', Times, serif;">Public NEWS</a>
         <button class="navbar-toggler position-absolute d-md-none collapsed py-0" type="button" data-toggle="collapse"
             data-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -66,7 +65,7 @@
                     {% if num != last %}
                     <a class="btn btn-primary float-right" href="{{old}}"> Next&rarr;</a>
                     {% endif %}
-                  </div>
+                </div>
             </main>
         </div>
     </div>
