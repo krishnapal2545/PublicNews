@@ -77,6 +77,13 @@
                                 Followers
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" onclick="Tab(4)"
+                                style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;">
+                                <span><i class="fas fa-comments" style="font-size: 25px;"></i></span>
+                                Chats
+                            </a>
+                        </li>
                         {% endif %}
                     </ul>
                     {% if otheruser %}
@@ -96,9 +103,9 @@
                     <ul class="nav flex-column mb-2">
                         {% for Article in Article %}
                         <li class="nav-item">
-                            <a class="nav-link" href="/news/{{Article.News_ID}}">
-                                <span data-feather="file-text"></span>
-                                {{Article.Title}}
+                            <a class="nav-link" href="/news/{{Article.News_ID}}" style="position:relative;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <img src="{{Article.Thumbnail}}" style="width: 70px;height:50px; position:relative; border-radius:100%; margin:auto;"><br>
+                                {{Article.Title[0:20]}}
                             </a>
                         </li>
                         {% endfor %}
@@ -126,7 +133,7 @@
                         </form>
                         {% endif %}
                     </div>
-                    <div class="card mb-3">
+                    <div class="card mb-3" style="border-radius: 30px;">
                         <div style="margin-top: 20px;"></div>
                         {% if User.Profile_img %}
                         <img src="{{url_for('static',filename= User.Profile_img)}}" class="card-img-top"
@@ -149,7 +156,7 @@
                             <hr class="my-4">
                             {% if otheruser %}
                             {% else %}
-                            <button class="w btn btn-primary btn-lg" type="button" onclick="Tab(4)">Edit
+                            <button class="w btn btn-primary btn-lg" type="button" onclick="Tab(5)">Edit
                                 Profile</button>
                             {% endif %}
                         </div>
@@ -166,10 +173,10 @@
                     <div>
                         {% for Read in Reading %}
                         {% for Article in Allnews if Read.News_ID == Article.News_ID %}
-                        <div class="card mb-3" style="max-width: 100%;">
+                        <div class="card mb-3" style="max-width: 100%; max-height:300px; border-radius:30px;">
                             <div class="row g-0">
                                 <div class="col-md-4">
-                                    <img src="{{Article.Thumbnail}}" alt="..." style="width: 100%;">
+                                    <img src="{{Article.Thumbnail}}" alt="..." style="width: 100%; height:180px; border-radius:30px; margin:auto;">
                                 </div>
                                 <div class="col-md-8">
                                     <div class="card-body">
@@ -177,7 +184,7 @@
                                         <p class="card-text">Origin : {{Article.Location}} , Tag : {{Article.Tag}}</p>
                                         <p class="card-text"><small class="text-muted">NEWS DATE :
                                                 {{Article.Date}}</small></p>
-                                        <a href="/news/{{Article.News_ID}}" class="stretched-link">Continue reading</a>
+                                        <a href="/news/{{Article.News_ID}}" class="stretched-link"style="text-decoration: none;">Continue reading &rarr;</a>
                                     </div>
                                 </div>
                             </div>
@@ -196,15 +203,15 @@
                     {% for Followed in Followed %}
                     {% for User in Alluser if User.ID_Number == Followed.Followed_ID %}
                     <a href="/profile/{{Followed.Followed_ID}}" style="color: black; text-decoration:none;">
-                        <div class="card mb-3" style="max-width: 100%; border-radius:100px; border-style:solid;">
+                        <div class="card mb-3" style="max-width: 70%; height:150px; border-radius:80px;">
                             <div class="row g-0">
                                 <div class="col-md-4">
                                     {% if User.Profile_img %}
                                     <img src="{{url_for('static',filename=User.Profile_img)}}" alt="..."
-                                        style="width: 100%;">
+                                        style="width: 150px; height:150px; margin:auto;border-radius:100%;">
                                     {% else %}
                                     <img src="{{url_for('static',filename='avtar.png')}}" alt="..."
-                                        style="width: 100%;">
+                                        style="width: 150px;height:150px; margin: auto;">
                                     {% endif %}
                                 </div>
                                 <div class="col-md-8">
@@ -229,16 +236,16 @@
                     </div>
                     {% for Follower in Follower %}
                     {% for User in Alluser if User.ID_Number == Follower.User_ID %}
-                    <a href="/profile/{{Follower.Followed_ID}}" style="color: black; text-decoration:none;">
-                        <div class="card mb-3" style="max-width: 100%;">
+                    <a href="/profile/{{Follower.User_ID}}" style="color: black; text-decoration:none;">
+                        <div class="card mb-3" style="max-width: 70%; height:150px; border-radius:80px;">
                             <div class="row g-0">
                                 <div class="col-md-4">
                                     {% if User.Profile_img %}
                                     <img src="{{url_for('static',filename=User.Profile_img)}}" alt="..."
-                                        style="width: 100%;">
+                                        style="width: 150px; height:150px; margin:auto;border-radius:100%;">
                                     {% else %}
                                     <img src="{{url_for('static',filename='avtar.png')}}" alt="..."
-                                        style="width: 100%;">
+                                        style="width: 150px;height:150px; margin: auto;">
                                     {% endif %}
                                 </div>
                                 <div class="col-md-8">
@@ -251,6 +258,44 @@
                             </div>
                         </div>
                     </a>
+                    {% endfor %}
+                    {% endfor %}
+                </div>
+                <div class="tab">
+                    <div
+                        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2" style="font-family: Georgia, 'Times New Roman', Times, serif;">
+                            <span><i class="fas fa-comments" style="font-size: 27px;"></i></span>Chats
+                        </h1>
+                    </div>
+                    {% for Followed in Followed %}
+                    {% for Follower in Follower %}
+                    {% if Followed.Followed_ID == Follower.User_ID %}
+                    {% for User in Alluser if User.ID_Number == Follower.User_ID %}
+                    <a href="/chats/{{Followed.Followed_ID}}" style="color: black; text-decoration:none;">
+                        <div class="card mb-3" style="max-width: 70%; height:150px; border-radius:80px;">
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                    {% if User.Profile_img %}
+                                    <img src="{{url_for('static',filename=User.Profile_img)}}" alt="..."
+                                        style="width: 150px; height:150px; margin:auto;border-radius:100%;">
+                                    {% else %}
+                                    <img src="{{url_for('static',filename='avtar.png')}}" alt="..."
+                                        style="width: 150px;height:150px; margin: auto;">
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{User.Name}}</h5>
+                                        <p class="card-text">Citizen : {{User.Country}}</p>
+                                        <p class="card-text">Bio : {{User.Bio}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                    {% endif %}
                     {% endfor %}
                     {% endfor %}
                 </div>
@@ -302,8 +347,8 @@
                                 </div>
                                 <div class="col-12">
                                     <label for="bio" class="form-label">Bio</label>
-                                    <textarea type="text" class="form-control" name="bio" value="{{User.Bio}}"
-                                        style="resize: none; height:100px;"></textarea>
+                                    <textarea type="text" class="form-control" name="bio"
+                                        style="resize: none; height:100px;">{{User.Bio}}</textarea>
                                 </div>
                                 <hr class="my-4">
                                 <input type="hidden" value="2" name="fol">
@@ -313,6 +358,7 @@
                         </form>
                     </div>
                 </div>
+                
             </main>
         </div>
     </div>
@@ -337,7 +383,7 @@
             var i;
             for (i = 0; i < x.length; i++) { x[i].style.display = "none"; } for (i = 0; i < y.length; i++) {
                 y[i].style.color = "#333";
-            } x[n].style.display = "block"; y[n + 1].style.color = "#007bff";
+            } x[n].style.display = "block"; y[n+1].style.color = "#007bff";
             y[0].style.color = "white";
         }
         function goBack() {
