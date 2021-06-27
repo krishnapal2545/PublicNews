@@ -13,8 +13,13 @@ with open('config.json','r') as c:
 UPLOAD_FOLDER = 'static/'
 ALLOWED_EXTENSIONS = { 'png', 'jpg', 'jpeg', }
 app = Flask(__name__)
-pool_size=20
-max_overflow=0
+SQLALCHEMY_ENGINE_OPTIONS = {
+    "max_overflow": 100,
+    "pool_pre_ping": True,
+    "pool_recycle": 60 * 60,
+    "pool_size": 300,
+}
+
 # if params['local_server']:
 #     app.config['SQLALCHEMY_DATABASE_URI'] = params['local_uri']
 # else:
@@ -22,6 +27,7 @@ max_overflow=0
 app.config['SQLALCHEMY_DATABASE_URI'] = params['prod_uri']
 app.config['SECRET_KEY'] = "sending messages"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['SQLALCHEMY_ENGINE_OPTIONS']= SQLALCHEMY_ENGINE_OPTIONS
 app.config['MAX_CONTENT_LENGTH'] = 16* 1024 *1024
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -37,7 +43,7 @@ class User_credential(db.Model):
 class Profile_info(db.Model):
     __tablename__ = 'profile_info'
     id = db.Column(db.Integer, primary_key=True)
-    ID_Number = db.Column(db.String(10),db.ForeignKey('user_credential.ID_Number'),primary_key=True)
+    ID_Number = db.Column(db.String(10),primary_key=True)
     Name = db.Column(db.String(150))
     Bio = db.Column(db.String(1000))
     Country = db.Column(db.String(150))
@@ -80,6 +86,10 @@ class Contact(db.Model):
     Email = db.Column(db.String(100))
     Message = db.Column(db.String())
 
+def getid():
+    id_no = escape(session['id_no'])
+    User = User_credential.query.filter_by(ID_Number = str(id_no)).first()
+    return User.ID_Number
 
 @app.route('/')
 async def home():
@@ -207,7 +217,7 @@ async def otherprofile(user_id=None):
 @app.route('/readinglist')
 async def read():
     if 'id_no' in session :
-        id_no = str(escape(session['id_no']))
+        id_no = getid()
         User = Profile_info.query.filter_by(ID_Number = id_no).first()
         article = News.query.filter_by(User_ID = id_no).all()
         allnews = News.query.all()
@@ -219,7 +229,7 @@ async def read():
 @app.route('/followers')
 async def follower():
     if 'id_no' in session :
-        id_no = str(escape(session['id_no']))
+        id_no = getid()
         follower = Followed.query.filter_by(Followed_ID = id_no)
         article = News.query.filter_by(User_ID = id_no).all()
         alluser = Profile_info.query.all()
@@ -231,7 +241,7 @@ async def follower():
 @app.route('/following')
 async def following():
     if 'id_no' in session :
-        id_no = str(escape(session['id_no']))
+        id_no = getid()
         User = Profile_info.query.filter_by(ID_Number = id_no).first()
         article = News.query.filter_by(User_ID = id_no).all()
         alluser = Profile_info.query.all()
@@ -243,7 +253,7 @@ async def following():
 @app.route('/chatlist')
 async def chatlist():
     if 'id_no' in session :
-        id_no = str(escape(session['id_no']))
+        id_no = getid()
         User = Profile_info.query.filter_by(ID_Number = id_no).first()
         article = News.query.filter_by(User_ID = id_no).all()
         follower = Followed.query.filter_by(Followed_ID = id_no)
@@ -273,7 +283,7 @@ async def addnews():
                    continue
                else :
                    break
-            id_no = str(escape(session['id_no']))           
+            id_no = getid()          
             title = request.form['title']
             thumb = request.form['thumbnail']
             locat = request.form['location']
@@ -296,7 +306,7 @@ async def news(article=None):
     unknow = True
     if article:
         if 'id_no' in session:  
-          id = str(escape(session['id_no']))
+          id = getid()
           if request.method == 'POST':
             read = request.form['read']
             if Reading_list.query.filter_by(User_ID = id,News_ID = read).first():
@@ -411,4 +421,4 @@ async def chats(friend):
 
 if __name__ == '__main__':
    db.create_all()
-   app.run(debug=False,host='0.0.0.0')
+   app.run(debug=False)
