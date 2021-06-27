@@ -3,7 +3,7 @@ from werkzeug.utils import secure_filename
 import os
 from flask import Flask , render_template , request , redirect , url_for , flash , session
 from markupsafe import escape
-import string,random , datetime , math , time
+import string,random , datetime , math 
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -45,6 +45,7 @@ class Profile_info(db.Model):
     Email = db.Column(db.String(150))
     Profile_img = db.Column(db.String(100))
     Friends = db.relationship('Followed', backref='profile_info',lazy='dynamic')
+    Reading = db.relationship('Reading_list',backref='profile_info',lazy ='dynamic')
 
 
 class News(db.Model):
@@ -58,13 +59,13 @@ class News(db.Model):
     Description = db.Column(db.String())
     Location = db.Column(db.String(10000))
     Tag = db.Column(db.String(100))
-    Reading = db.relationship('Reading_list',lazy ='dynamic')
+    
     
 class Reading_list(db.Model):
     __tablename__ = 'reading_list'
     id = db.Column(db.Integer, primary_key=True)
-    News_ID = db.Column(db.String(150),db.ForeignKey('news.News_ID'))
-    User_ID = db.Column(db.String(100))
+    News_ID = db.Column(db.String(150))
+    User_ID = db.Column(db.String(100),db.ForeignKey('profile_info.ID_Number'))
 
 class Followed(db.Model):
     __tablename__ = 'followed'
@@ -82,7 +83,6 @@ class Contact(db.Model):
 
 @app.route('/')
 async def home():
-    tic = time.perf_counter()
     No_post =  params['no_of_post']
     Article = News.query.all()
     Article.reverse()
@@ -101,8 +101,6 @@ async def home():
     else:
         prev = "/?page="+ str(page-1)
         old = "/?page="+ str(page+1)
-    toc = time.perf_counter()
-    print(toc - tic)
     if 'id_no' in session :
         return render_template('home.html',ID_Number = escape(session['id_no']),Article=Article,prev=prev,old=old,num=page,last=last)
     
@@ -111,7 +109,6 @@ async def home():
 
 @app.route('/repoter',methods=['GET', 'POST'])
 async def login_register():
-    tic = time.perf_counter()
     if request.method == 'POST':
         if request.form['tab']== '1':  
             id_no = request.form['id_no']
@@ -145,34 +142,16 @@ async def login_register():
             db.session.add(create)
             db.session.commit()
             flash(f'Your Registration is done and Your ID Number is {id_no}')
-    toc = time.perf_counter()
-    print(toc - tic)
     return render_template('login_register.html')
 
-@app.route('/profile/<user_id>', methods = ['GET','POST'])
+
 @app.route('/profile', methods = ['GET','POST'])
-async def profile(user_id=None):
-    tic = time.perf_counter()
+async def profile():
     if 'id_no' in session :
         id_no =str(escape(session['id_no']))
-        otheruser = False
-        if user_id: 
-            if id_no == user_id :
-              otheruser = False
-            else:
-              otheruser = True
-              id_no = user_id
-
         User = Profile_info.query.filter_by(ID_Number = id_no).first()
-        followed = Followed.query.filter_by(User_ID = id_no)
-        follower = Followed.query.filter_by(Followed_ID = id_no)
         article = News.query.filter_by(User_ID = id_no).all()
-        reading = Reading_list.query.filter_by(User_ID = id_no).all()
-        alluser = Profile_info.query.all()
-        allnews = News.query.all()
-        if request.method == 'POST':
-
-          if request.form['fol'] == '2':  
+        if request.method == 'POST':  
             name = request.form['name']
             country = request.form['country']
             phone_no = request.form['phone_no']
@@ -190,10 +169,24 @@ async def profile(user_id=None):
             if bio :  User.Bio = bio
             if f : User.Profile_img = filename
             db.session.commit()
-          if request.form['fol']== '1':
+        return render_template('profile.html',User = User,Article = article,otheruser=False)
+    else:
+        return redirect(url_for('login_register'))
+
+@app.route('/profile/<user_id>', methods = ['GET','POST'])
+async def otherprofile(user_id=None):
+    if 'id_no' in session :
+        id_no =str(escape(session['id_no']))
+        if user_id: 
+            if id_no == user_id :
+              return redirect(url_for('profile'))
+            else:
+              id_no = user_id
+        User = Profile_info.query.filter_by(ID_Number = id_no).first()
+        article = News.query.filter_by(User_ID = id_no).all()
+        if request.method == 'POST':
             follow = request.form['follow']
             id = str(escape(session['id_no']))
-            print(request.form['op'])
             if request.form['op'] == 'Follow':
               if Followed.query.filter_by(User_ID = id,Followed_ID = follow).first():
                   pass
@@ -201,16 +194,61 @@ async def profile(user_id=None):
                   Create = Followed(User_ID = id, Followed_ID = follow)
                   db.session.add(Create)
                   db.session.commit()
-
             if request.form['op'] == 'Unfollow' :
               if Followed.query.filter_by(User_ID = id,Followed_ID = follow).first():
                   Followed.query.filter_by(User_ID = id,Followed_ID = follow).delete()
                   db.session.commit()
               else:
                   pass
-        toc = time.perf_counter()
-        print(toc - tic)
-        return render_template('profile.html',User = User,Article = article,otheruser=otheruser,Follower = follower,Followed=followed,Reading = reading,Alluser = alluser,Allnews = allnews)
+        return render_template('profile.html',User = User,Article = article,otheruser=True)
+    else:
+        return redirect(url_for('login_register'))
+
+@app.route('/readinglist')
+async def read():
+    if 'id_no' in session :
+        id_no = str(escape(session['id_no']))
+        User = Profile_info.query.filter_by(ID_Number = id_no).first()
+        article = News.query.filter_by(User_ID = id_no).all()
+        allnews = News.query.all()
+        return render_template('readinglist.html',Article=article,Allnews =allnews,User = User )
+    else:
+        return redirect(url_for('login_register'))
+
+
+@app.route('/followers')
+async def follower():
+    if 'id_no' in session :
+        id_no = str(escape(session['id_no']))
+        follower = Followed.query.filter_by(Followed_ID = id_no)
+        article = News.query.filter_by(User_ID = id_no).all()
+        alluser = Profile_info.query.all()
+        return render_template('follower.html',Article=article,Alluser = alluser,Follower = follower )
+    else:
+        return redirect(url_for('login_register'))
+
+
+@app.route('/following')
+async def following():
+    if 'id_no' in session :
+        id_no = str(escape(session['id_no']))
+        User = Profile_info.query.filter_by(ID_Number = id_no).first()
+        article = News.query.filter_by(User_ID = id_no).all()
+        alluser = Profile_info.query.all()
+        return render_template('following.html',Article=article,Alluser = alluser,User = User )
+    else:
+        return redirect(url_for('login_register'))
+
+
+@app.route('/chatlist')
+async def chatlist():
+    if 'id_no' in session :
+        id_no = str(escape(session['id_no']))
+        User = Profile_info.query.filter_by(ID_Number = id_no).first()
+        article = News.query.filter_by(User_ID = id_no).all()
+        follower = Followed.query.filter_by(Followed_ID = id_no)
+        alluser = Profile_info.query.all()
+        return render_template('chatlist.html',Article=article,User = User,Alluser = alluser,Follower = follower )
     else:
         return redirect(url_for('login_register'))
 
@@ -226,7 +264,6 @@ async def logout():
 
 @app.route('/addnews',methods=['GET', 'POST'])
 async def addnews():
-    tic = time.perf_counter()
     if 'id_no' in session:
         if request.method == 'POST':
             while True :
@@ -246,11 +283,7 @@ async def addnews():
             create = News(User_ID = id_no,News_ID = news_id,Thumbnail = thumb,Location = locat,Tag=tag,Description = descrip,Title = title,Date =date1)
             db.session.add(create)
             db.session.commit()
-            toc = time.perf_counter()
-            print(toc - tic)
             return redirect(url_for('profile'))
-        toc = time.perf_counter()
-        print(toc - tic)
         return render_template('addnews.html')
     else:
         return redirect(url_for('home'))
@@ -372,10 +405,10 @@ async def deletenews(article):
 @app.route('/chats/<friend>')
 async def chats(friend):
     if 'id_no' in session:
-        return 'Working in Progress'
+        return render_template('chats.html')
     else:
         return redirect(url_for('home'))
 
 if __name__ == '__main__':
    db.create_all()
-   app.run(debug=False)
+   app.run(debug=False,host='0.0.0.0')

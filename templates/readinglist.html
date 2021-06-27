@@ -1,0 +1,115 @@
+{% include 'profilemain.html' %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta id="my-data" data-name="{{otheruser}}">
+    <link rel="stylesheet" href="profilestyle.css">
+</head>
+<body>
+    {% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"
+                class="navbar navbar-expand-lg navbar-light ">
+                <div class="position-sticky pt-3" class="collapse navbar-collapse" id="sidebarMenu">
+                    <ul class="nav flex-column" class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/profile"
+                                style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer; color:#333;">
+                                <span><i class="fas fa-user" style="font-size: 25px; color:#333;"></i></span>
+                                Profile
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/readinglist" aria-current="page"
+                                style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;">
+                                <span><i class="fas fa-folder" style="font-size: 25px;color:#333;"></i></span>
+                                Reading List
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/following"
+                                style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;color:#333;">
+                                <span><i class="fas fa-user-friends" style="font-size: 25px;color:#333;"></i></span>
+                                Following
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/followers"
+                                style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;color:#333;">
+                                <span><i class="fas fa-users" style="font-size: 27px;color:#333;"></i></span>
+                                Followers
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/chatlist" 
+                                style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;color:#333;">
+                                <span><i class="fas fa-comments" style="font-size: 25px;color:#333;"></i></span>
+                                Chats
+                            </a>
+                        </li>
+                    </ul>
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted"
+                        style="font-family: Georgia, 'Times New Roman', Times, serif;color:#333;">
+                        <span style="font-size: 15px;">Your NEWS</span>
+                        <a class="link-secondary" href="/addnews" aria-label="Add a new report">
+                            <i class="fas fa-plus" style="font-size: 15px;"></i>
+                        </a>
+                    </h6>
+                    <ul class="nav flex-column mb-2">
+                        {% for Article in Article %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/news/{{Article.News_ID}}" style="position:relative;color:#333;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <img src="{{Article.Thumbnail}}" style="width: 70px;height:50px; position:relative; border-radius:100%; margin:auto;"><br>
+                                {{Article.Title[0:20]}}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                    <div
+                        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2" style="font-family: Georgia, 'Times New Roman', Times, serif;">
+                            <span><i class="fas fa-folder" style="font-size: 25px;"></i></span>Reading List
+                        </h1>
+                    </div>
+                    <div>
+                        {% for Read in User.Reading %}
+                        {% for Article in Allnews if Read.News_ID == Article.News_ID %}
+                        <div class="card mb-3" style="max-width: 100%; max-height:300px; border-radius:30px;">
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                    <img src="{{Article.Thumbnail}}" alt="..." style="width: 100%; height:180px; border-radius:30px; margin:auto;">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{Article.Title}}</h5>
+                                        <p class="card-text">Origin : {{Article.Location}} , Tag : {{Article.Tag}}</p>
+                                        <p class="card-text"><small class="text-muted">NEWS DATE :
+                                                {{Article.Date}}</small></p>
+                                        <a href="/news/{{Article.News_ID}}" class="stretched-link"style="text-decoration: none;">Continue reading &rarr;</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% endfor %}
+                    </div>
+            </main>
+        </div>
+    </div>
+    {% endblock %}
+    <script type="text/javascript">
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+</body>
+
+</html>
