@@ -16,10 +16,10 @@ app = Flask(__name__)
 
 
 SQLALCHEMY_ENGINE_OPTIONS = {
-    "max_overflow": 100,
+    "max_overflow": 10000,
     "pool_pre_ping": True,
     "pool_recycle": 60 * 60,
-    "pool_size": 300,
+    "pool_size": 30000,
 }
 
 # if params['local_server']:
