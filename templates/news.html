@@ -18,7 +18,7 @@
 
     <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
 
-        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" onclick="goBack()"
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="/"
             style="color: ivory;cursor:pointer;font-family: Georgia, 'Times New Roman', Times, serif;">Public NEWS</a>
         <button class="navbar-toggler position-absolute d-md-none collapsed py-0" type="button" data-toggle="collapse"
             data-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,17 +33,28 @@
 
     <div class="container-fluid">
         <div class="row">
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                    <div
-                        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                        <h1 class="h2" style="font-family: Georgia, 'Times New Roman', Times, serif;">
-                            {{Article.Tag}}
-                        </h1>
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"
+                class="navbar navbar-expand-lg navbar-light ">
+                <div class="position-sticky pt-3" class="collapse navbar-collapse" id="sidebarMenu">
+                    <ul class="nav flex-column" class="navbar-nav me-auto mb-2 mb-lg-0">
                         {% if Unknow %}
                         {% if Owner %}
-                            <a href="/editnews/{{Article.News_ID}}"><button class="w btn btn-primary btn-lg" type="button">Edit NEWS</button></a>
-                            <a href="/news/delete/{{Article.News_ID}}"><button class="w btn btn-primary btn-lg" type="button">Delete</button></a>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/editnews/{{Article.News_ID}}"
+                                style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;font-size: 25px;">
+                                <span><i class="fas fa-edit" style="font-size: 20px; color:#333;"></i></span>
+                                EDIT
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/news/delete/{{Article.News_ID}}"
+                                style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;font-size: 25px;">
+                                <span><i class="fas fa-trash" style="font-size: 20px; color:#333;"></i></span>
+                                Delete
+                            </a>
+                        </li>
                         {% else %}
+                        
                         <form method="POST" id="tp1">
                             <input type="hidden" value="{{Article.News_ID}}}" name="read">
                             <input type="hidden" value="1" name="fol">
@@ -51,9 +62,34 @@
                         </form>
                         {% endif %}
                         {% endif %}
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted"
+                        style="font-family: Georgia, 'Times New Roman', Times, serif;">
+                        <span style="font-size: 25px;">Related NEWS</span>
+                    </h6>
+                    <ul class="nav flex-column mb-2">
+                        {% for News in Articles %}
+                        {% if News.News_ID == Article.News_ID %}
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/news/{{News.News_ID}}" style="position:relative;color:#333;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <img src="{{News.Thumbnail}}" style="width: 70px;height:50px; position:relative; border-radius:100%; margin:auto;"><br>
+                                {{News.Title[0:20]}}
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                    </ul>
+
+                </div>
+            </nav>
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                    <div
+                        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2" style="font-family: Georgia, 'Times New Roman', Times, serif;">
+                            {{Article.Tag}}
+                        </h1>
                     </div>
                     <div class="card mb-3">
-                        <div style="margin-top: 20px;"></div>
                         <img src="{{Article.Thumbnail}}" class="card-img-top" style="max-width: 100%; max-height: 100%; margin:auto;">
                         <div class="card-body" style="font-family: 'Times New Roman', Times, serif;">
                             <h1 class="card-title">{{Article.Title}}</h1>
@@ -61,7 +97,7 @@
                             <h3 class="card-text">Date: {{Article.Date}}</h3>
                             <h3 class="card-text">Owner: <a href="/profile/{{Article.User_ID}}" style="text-decoration:none; color:black;">{{Article.User_ID}}</a></h5>
                             <h3 class="card-text">Description :</h3>
-                            <p class="card-text" style="font-size: 20px;">{{Article.Description}}</p>
+                            <p class="card-text" style="font-size: 20px;white-space:pre-wrap;">{{Article.Description}}</p>
                             <hr class="my-4">
                         </div>
                     </div> 
@@ -77,5 +113,4 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 </body>
-
 </html>

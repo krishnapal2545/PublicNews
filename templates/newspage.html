@@ -18,7 +18,7 @@
 
     <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
 
-        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" onclick="goBack()"
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="/"
             style="color: ivory;cursor:pointer;font-family: Georgia, 'Times New Roman', Times, serif;">Public NEWS</a>
         <button class="navbar-toggler position-absolute d-md-none collapsed py-0" type="button" data-toggle="collapse"
             data-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,6 +33,62 @@
 
     <div class="container-fluid">
         <div class="row">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"
+                class="navbar navbar-expand-lg navbar-light ">
+                <div class="position-sticky pt-3" class="collapse navbar-collapse" id="sidebarMenu">
+                    <ul class="nav flex-column" class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/news/Technology"
+                                style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;color:#333;">
+                                <span><i class="fas fa-satellite" style="font-size: 25px; color:#333;"></i></span>
+                                Technology
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/news/Culture" aria-current="page"
+                                style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;color:#333;">
+                                <span><i class="fas fa-users" style="font-size: 25px;color:#333;"></i></span>
+                               Culture
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/news/Business"
+                                style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;color:#333;">
+                                <span><i class="fas fa-building" style="font-size: 25px;color:#333;"></i></span>
+                                Business
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/news/Politics"
+                                style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;color:#333;">
+                                <span><i class="fas fa-fist-raised" style="font-size: 27px;color:#333;"></i></span>
+                                Politics
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/news/Science" 
+                                style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;color:#333;">
+                                <span><i class="fas fa-atom" style="font-size: 25px;color:#333;"></i></span>
+                                Science
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/news/Health" 
+                                style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;color:#333;">
+                                <span><i class="fas fa-first-aid" style="font-size: 25px;color:#333;"></i></span>
+                                Health
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/news/Travel" 
+                                style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;color:#333;">
+                                <span><i class="fas fa-route" style="font-size: 25px;color:#333;"></i></span>
+                                Travel
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div
                     class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -44,7 +100,7 @@
                 <div class="card mb-3" style="max-width: 100%; max-height:300px; border-radius:30px;">
                     <div class="row g-0">
                         <div class="col-md-4">
-                            <img src="{{Article.Thumbnail}}" alt="..." style="width: 100%; height:180px; border-radius:30px; margin:auto;">
+                            <img src="{{Article.Thumbnail}}" alt="..." style="width: 100%; height:100%; border-radius:30px; margin:auto;">
                         </div>
                         <div class="col-md-8">
                             <div class="card-body">
