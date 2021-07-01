@@ -3,75 +3,60 @@
 <html lang="en">
 
 <head>
-    <meta id="my-data" data-name="{{otheruser}}">
-    <link rel="stylesheet" href="profilestyle.css">
-    <title style="font-family: Georgia, 'Times New Roman', Times, serif;">Public NEWS</title>
-    <link rel="icon" href="{{ url_for('static',filename='icon.png')}}" type="image/icon type">
 </head>
 <body>
     {% block content %}
     <div class="container-fluid">
         <div class="row">
             <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"
-                class="navbar navbar-expand-lg navbar-light ">
-                <div class="position-sticky pt-3" class="collapse navbar-collapse" id="sidebarMenu">
-                    <ul class="nav flex-column" class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/profile"
-                                style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer; color:#333;">
-                                <span><i class="fas fa-user" style="font-size: 25px; color:#333;"></i></span>
-                                Profile
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="/readinglist" aria-current="page"
-                                style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;">
-                                <span><i class="fas fa-folder" style="font-size: 25px;color:#333;"></i></span>
-                                Reading List
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/following"
-                                style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;color:#333;">
-                                <span><i class="fas fa-user-friends" style="font-size: 25px;color:#333;"></i></span>
-                                Following
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/followers"
-                                style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;color:#333;">
-                                <span><i class="fas fa-users" style="font-size: 27px;color:#333;"></i></span>
-                                Followers
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/chatlist" 
-                                style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;color:#333;">
-                                <span><i class="fas fa-comments" style="font-size: 25px;color:#333;"></i></span>
-                                Chats
-                            </a>
-                        </li>
-                    </ul>
-                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted"
-                        style="font-family: Georgia, 'Times New Roman', Times, serif;color:#333;">
-                        <span style="font-size: 15px;">Your NEWS</span>
-                        <a class="link-secondary" href="/addnews" aria-label="Add a new report">
-                            <i class="fas fa-plus" style="font-size: 15px;"></i>
+            class="navbar navbar-expand-lg navbar-light ">
+            <div class="position-sticky pt-3" class="collapse navbar-collapse" id="sidebarMenu">
+                <ul class="nav flex-column" class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/profile"
+                            style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;">
+                            <span><i class="fas fa-user" style="font-size: 25px;"></i></span>
+                            Profile
                         </a>
-                    </h6>
-                    <ul class="nav flex-column mb-2">
-                        {% for Article in Article %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="/news/{{Article.News_ID}}" style="position:relative;color:#333;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                <img src="{{Article.Thumbnail}}" style="width: 70px;height:50px; position:relative; border-radius:100%; margin:auto;"><br>
-                                {{Article.Title[0:20]}}
-                            </a>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </nav>
-
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/readinglist" aria-current="page"
+                            style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;">
+                            <span><i class="fas fa-folder" style="font-size: 25px;"></i></span>
+                            Reading List
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/following"
+                            style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;">
+                            <span><i class="fas fa-user-friends" style="font-size: 25px;"></i></span>
+                            Following
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/followers"
+                            style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;">
+                            <span><i class="fas fa-users" style="font-size: 27px;"></i></span>
+                            Followers
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/chatlist" 
+                            style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;">
+                            <span><i class="fas fa-comments" style="font-size: 25px;"></i></span>
+                            Chats
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/usernews" 
+                            style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;">
+                            <span><i class="fas fa-newspaper" style="font-size: 25px;"></i></span>
+                            Your NEWS
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                     <div
                         class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">

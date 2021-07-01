@@ -1,7 +1,6 @@
 {% include 'profilemain.html' %}
 <!doctype html>
 <html lang="en">
-
 <head>
 </head>
 <body>
@@ -12,10 +11,19 @@
                 class="navbar navbar-expand-lg navbar-light ">
                 <div class="position-sticky pt-3" class="collapse navbar-collapse" id="sidebarMenu">
                     <ul class="nav flex-column" class="navbar-nav me-auto mb-2 mb-lg-0">
+                        {% if otheruser %} 
+                        <li class="nav-item">
+                            <a class="nav-link" href="/profile/{{User.ID_Number}}"
+                                style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;">
+                                <span><i class="fas fa-user" style="font-size: 25px;"></i></span>
+                                Profile
+                            </a>
+                        </li>
+                        {% else %}
                         <li class="nav-item">
                             <a class="nav-link" href="/profile"
                                 style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer; ">
-                                <span><i class="fas fa-user" style="font-size: 25px; "></i></span>
+                                <span><i class="fas fa-user" style="font-size: 25px;"></i></span>
                                 Profile
                             </a>
                         </li>
@@ -27,7 +35,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" href="/following" aria-current="page"
+                            <a class="nav-link" href="/following"
                                 style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;">
                                 <span><i class="fas fa-user-friends" style="font-size: 25px;"></i></span>
                                 Following
@@ -41,19 +49,30 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link " href="/chatlist" 
+                            <a class="nav-link" href="/chatlist" 
                                 style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;">
                                 <span><i class="fas fa-comments" style="font-size: 25px;"></i></span>
                                 Chats
                             </a>
                         </li>
+                        {% endif %}
+                        {% if otheruser %}
                         <li class="nav-item">
-                            <a class="nav-link " href="/usernews"  
+                            <a class="nav-link active" href="/usernews/{{User.ID_Number}}" aria-current="page"
+                                style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;">
+                                <span><i class="fas fa-newspaper" style="font-size: 25px;"></i></span>
+                                NEWS Uploaded
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/usernews" aria-current="page"
                                 style="font-family: Georgia, 'Times New Roman', Times, serif; cursor:pointer;">
                                 <span><i class="fas fa-newspaper" style="font-size: 25px;"></i></span>
                                 Your NEWS
                             </a>
                         </li>
+                        {% endif %}
                     </ul>
                 </div>
             </nav>
@@ -61,40 +80,47 @@
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                     <div
                         class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        {% if otheruser %} 
                         <h1 class="h2" style="font-family: Georgia, 'Times New Roman', Times, serif;">
-                            <span><i class="fas fa-user-friends" style="font-size: 25px;"></i></span>Following
+                            <span><i class="fas fa-folder" style="font-size: 25px;"></i></span>NEWS Uploaded
                         </h1>
+                        {% else %}
+                        <h1 class="h2" style="font-family: Georgia, 'Times New Roman', Times, serif;">
+                            <span><i class="fas fa-folder" style="font-size: 25px;"></i></span>Your NEWS
+                        </h1>
+                        <a class="link-secondary" href="/addnews" aria-label="Add a new report">
+                            <i class="fas fa-plus" style="font-size: 40px;"></i>
+                        </a>
+                        {% endif %}
                     </div>
-                    {% for Followed in User.Friends %}
-                    {% for user in Alluser if user.ID_Number == Followed.Followed_ID %}
-                    <a href="/profile/{{Followed.Followed_ID}}" style="color: black; text-decoration:none;">
-                        <div class="card mb-3" style="max-width: 70%; height:150px; border-radius:80px;">
+                    <div>
+                        {% for Article in Article %}
+                        <div class="card mb-3" style="max-width: 100%; max-height:300px; border-radius:30px;">
                             <div class="row g-0">
                                 <div class="col-md-4">
-                                    {% if user.Profile_img %}
-                                    <img src="{{url_for('static',filename=user.Profile_img)}}" alt="..."
-                                        style="width: 150px; height:150px; margin:auto;border-radius:100%;">
-                                    {% else %}
-                                    <img src="{{url_for('static',filename='avtar.png')}}" alt="..."
-                                        style="width: 150px;height:150px; margin: auto;">
-                                    {% endif %}
+                                    <img src="{{Article.Thumbnail}}" alt="..." style="width: 100%; height:100%; border-radius:30px; margin:auto;">
                                 </div>
                                 <div class="col-md-8">
                                     <div class="card-body">
-                                        <h5 class="card-title">{{user.Name}}</h5>
-                                        <p class="card-text">Citizen : {{user.Country}}</p>
-                                        <p class="card-text">Bio : {{user.Bio}}</p>
+                                        <h5 class="card-title">{{Article.Title}}</h5>
+                                        <p class="card-text">Origin : {{Article.Location}} , Tag : {{Article.Tag}}</p>
+                                        <p class="card-text"><small class="text-muted">NEWS DATE :{{Article.Date}}</small></p>
+                                        <a href="/news/{{Article.News_ID}}" class="stretched-link"style="text-decoration: none;">Continue reading &rarr;</a>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </a>
-                    {% endfor %}
-                    {% endfor %}
+                        {% endfor %}
+                    </div>
             </main>
         </div>
     </div>
     {% endblock %}
+    <script type="text/javascript">
+        function goBack() {
+            window.history.back();
+        }
+    </script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 </body>

@@ -2,8 +2,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    
 </head>
-<body>
+<body style="background-color: rgba(0, 0, 0, 0.534);">
     {% block content %} 
     {%- for message in get_flashed_messages() %}
     <div class="container-fluid p-0">
@@ -18,13 +19,15 @@
     <div class="container">
         <div class="nav-scroller py-1 mb-2">
             <nav class="nav d-flex justify-content-between">
-                <a class="p-2 link-secondary" href="/news/Technology">Technology</a>
-                <a class="p-2 link-secondary" href="/news/Culture">Culture</a>
-                <a class="p-2 link-secondary" href="/news/Business">Business</a>
-                <a class="p-2 link-secondary" href="/news/Politics">Politics</a>
-                <a class="p-2 link-secondary" href="/news/Science">Science</a>
-                <a class="p-2 link-secondary" href="/news/Health">Health</a>
-                <a class="p-2 link-secondary" href="/news/Travel">Travel</a>
+                <a class="p-2 link-secondary" href="/topnews/Worlds" style="color: blanchedalmond;">Worlds</a>
+                <a class="p-2 link-secondary" href="/topnews/Technology" style="color: blanchedalmond;">Technology</a>
+                <a class="p-2 link-secondary" href="/topnews/Culture"style="color: blanchedalmond;">Culture</a>
+                <a class="p-2 link-secondary" href="/topnews/Business"style="color: blanchedalmond;">Business</a>
+                <a class="p-2 link-secondary" href="/topnews/Politics"style="color: blanchedalmond;">Politics</a>
+                <a class="p-2 link-secondary" href="/topnews/Science"style="color: blanchedalmond;">Science</a>
+                <a class="p-2 link-secondary" href="/topnews/Health"style="color: blanchedalmond;">Health</a>
+                <a class="p-2 link-secondary" href="/topnews/Sports"style="color: blanchedalmond;">Sports</a>
+                <a class="p-2 link-secondary" href="/topnews/Travel"style="color: blanchedalmond;">Travel</a>
             </nav>
         </div>
     </div>
@@ -63,59 +66,25 @@
             </button>
           </div>
       </div>
-       <div class="row g-5">
-            <div class="col-md-8">
+            <div >
                 {% for Article in Article %}
-                <div class="card mb-3" style="max-width: 100%; max-height:300px; border-radius:30px;">
+                <div class="card mb-3 bg-dark" style="max-width: 100%; max-height:300px; border-radius:30px;">
                   <div class="row g-0">
                       <div class="col-md-4">
-                          <img src="{{Article.Thumbnail}}" alt="..." style="width: 100%; height:100%; border-radius:30px; margin:auto;">
+                          <img src="{{Article['urlToImage']}} " style="max-width: 100%; max-height:300px; border-radius:30px 0px 0px 30px; margin:auto;">
                       </div>
-                      <div class="col-md-8">
+                      <div class="col-md-8" style="color: blanchedalmond;">
                           <div class="card-body">
-                              <h5 class="card-title">{{Article.Title}}</h5>
-                              <p class="card-text">Origin : {{Article.Location}} , Tag : {{Article.Tag}}</p>
+                              <h5 class="card-title">{{Article['title']}}</h5>
                               <p class="card-text"><small class="text-muted">NEWS DATE :
-                                      {{Article.Date}}</small></p>
-                              <a href="/news/{{Article.News_ID}}" class="stretched-link"style="text-decoration: none;">Continue reading &rarr;</a>
+                                      {{Article['publishedAt']}}</small></p>
+                              <h3 style="font-size: 15px;white-space:pre-wrap;">{{Article['description']}}</h3>
                           </div>
                       </div>
                   </div>
               </div>
                 {% endfor %}
-                <div class="clear-fix">
-                  {% if num != 1 %}
-                  <a class="btn btn-primary float-left" href="{{prev}}">&larr;Previous</a>
-                  {% endif %}
-                  {% if num != last %}
-                    <a class="btn btn-primary float-right" href="{{old}}"> Next&rarr;</a>
-                    {% endif %}
-                </div>
             </div>
-            <div class="col-md-4">
-                <div class="position-sticky" style="top: 2rem;">
-                    <div class="p-4 mb-3 bg-light rounded">
-                        <h4 class="fst-italic">About</h4>
-                        <p class="mb-0">
-                          <div class="card" style="width: 18rem;">
-                            <img src="{{url_for('static',filename='krishna.png')}}" class="card-img-top" alt="...">
-                            <div class="card-body">
-                              <h5 class="card-title">KrishnaKumar Pal</h5>
-                             <a href="mailto: krishnakumar.pal@somaiya.edu" target="_blank" style="text-decoration: none; color:black;"><i class="fas fa-envelope"> Mail &nbsp;</i></a> 
-                             <a href="https://www.linkedin.com/in/krishna-pal-6765221bb" target="_blank" style="text-decoration: none;color:black;"><i class="fab fa-linkedin"> Linkedin &nbsp;</i></a> 
-                             <a href="https://www.instagram.com/invites/contact/?i=k6juulw0fkq5&utm_content=33sxvxh"target="_blank" style="text-decoration: none;color:black;"><i class="fab fa-instagram-square"> Instagram &nbsp;</i></a> 
-                            </div>
-                          </div>
-                          This webapp is made my Mr.KrishnaKumar RajendraPrasad Pal <br>
-                          This webapp is all about NEWS you can b read news and upload your news by Becone a Reporter For my Channel and Earn Money <br>
-                          You Need Minimum 1k Follower and 100 Post with Minimum 100 in ReadingList to start Earning.<br>
-                          SO START EARNING TODAY BY UPLOADING YOUR NEWS ON PUBLIC NEWS WEBAPP <br>
-                          Thnaks for coming.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
     </main>
     <footer id="sticky-footer" class="py-4 bg-dark text-white-50 mt-3">
       <div class="container text-center">

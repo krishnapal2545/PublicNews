@@ -1,9 +1,9 @@
-import json
+from newsapi.newsapi_client import NewsApiClient
+from sqlalchemy.orm import backref
 from werkzeug.utils import secure_filename
-import os
 from flask import Flask , render_template , request , redirect , url_for , flash , session
 from markupsafe import escape
-import string,random , datetime , math 
+import string,random , datetime , math , json , os
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -14,6 +14,7 @@ UPLOAD_FOLDER = 'static/'
 ALLOWED_EXTENSIONS = { 'png', 'jpg', 'jpeg', }
 app = Flask(__name__)
 
+newsapi = NewsApiClient(api_key='b92898cd55d748f0a04175e18f3bcb82')
 
 SQLALCHEMY_ENGINE_OPTIONS = {
     "max_overflow": 10000,
@@ -65,6 +66,7 @@ class News(db.Model):
     Description = db.Column(db.String())
     Location = db.Column(db.String(10000))
     Tag = db.Column(db.String(100))
+    Comment = db.relationship('Comments',backref='news',lazy = 'dynamic')
     
 class Reading_list(db.Model):
     __tablename__ = 'reading_list'
@@ -84,6 +86,15 @@ class Contact(db.Model):
     Name = db.Column(db.String(100))
     Email = db.Column(db.String(100))
     Message = db.Column(db.String())
+
+class Comments(db.Model):
+    __tablename__ = 'comments'
+    id = db.Column(db.Integer, primary_key=True)
+    News_ID = db.Column(db.String(100), db.ForeignKey('news.News_ID'))
+    User_ID = db.Column(db.String(100))
+    Comment = db.Column(db.String())
+    Date = db.Column(db.DateTime(),default=datetime.datetime.utcnow)
+
 # @celery.task(bind=True)
 def getid():
     id_no = escape(session['id_no'])
@@ -99,6 +110,36 @@ async def allnews():
 async def before_request():
     session.permanent = True
     app.permanent_session_lifetime = datetime.timedelta(minutes=60)
+
+@app.route('/topnews/<type>')
+@app.route('/topnews')
+async def topnews(type=None):
+   try:
+    if type == 'Worlds':
+        news = newsapi.get_everything(q='World')
+    elif type == 'Technology':
+        news = newsapi.get_everything(q='Technology')
+    elif type == 'Culture':
+        news = newsapi.get_everything(q='Culture')
+    elif type == 'Business':
+        news = newsapi.get_everything(q='Business')
+    elif type == 'Politics':
+        news = newsapi.get_everything(q='Politics')
+    elif type == 'Science':
+        news = newsapi.get_everything(q='Science')
+    elif type == 'Health':
+        news = newsapi.get_everything(q='Health')
+    elif type == 'Sports':
+        news = newsapi.get_everything(q='Sports')
+    elif type == 'Travel':
+        news = newsapi.get_everything(q='Travel')
+    else:
+        news = newsapi.get_top_headlines(country="in")
+    return render_template('topnews.html',Article = news['articles'])
+   except Exception as e:
+       flash(' No Internet Connection ')
+       return redirect('/')
+
 
 @app.route('/')
 async def home():
@@ -203,41 +244,70 @@ async def profile():
 async def otherprofile(user_id=None):
     if 'id_no' in session :
         id_no =str(escape(session['id_no']))
+        otheruser = Profile_info.query.filter_by(ID_Number = id_no).first()
         if user_id: 
             if id_no == user_id :
               return redirect(url_for('profile'))
             else:
               id_no = user_id
         User = Profile_info.query.filter_by(ID_Number = id_no).first()
-        article = News.query.filter_by(User_ID = id_no).all()
-        if request.method == 'POST':
-            follow = request.form['follow']
-            id = str(escape(session['id_no']))
-            if request.form['op'] == 'Follow':
-              if Followed.query.filter_by(User_ID = id,Followed_ID = follow).first():
-                  pass
-              elif follow:
-                  Create = Followed(User_ID = id, Followed_ID = follow)
-                  db.session.add(Create)
-                  db.session.commit()
-            if request.form['op'] == 'Unfollow' :
-              if Followed.query.filter_by(User_ID = id,Followed_ID = follow).first():
-                  Followed.query.filter_by(User_ID = id,Followed_ID = follow).delete()
-                  db.session.commit()
-              else:
-                  pass
-        return render_template('profile.html',User = User,Article = article,otheruser=True)
+        for i in otheruser.Friends:
+            if i.Followed_ID == id_no:
+                f=True
+                break
+            else:
+                f=False
+        follow = request.args.get('user')
+        friend = request.args.get('id')
+        id = str(escape(session['id_no']))
+        if follow == 'Follow':
+            print('hii')
+            if Followed.query.filter_by(User_ID = id,Followed_ID = friend).first():
+                pass
+            else:
+                Create = Followed(User_ID = id, Followed_ID = friend)
+                db.session.add(Create)
+                db.session.commit()
+            return redirect(f'/profile/{id_no}')
+        if follow == 'Unfollow' :
+            print('hii')
+            if Followed.query.filter_by(User_ID = id,Followed_ID = friend).first():
+                print('hii2')
+                Followed.query.filter_by(User_ID = id,Followed_ID = friend).delete()
+                db.session.commit()
+            else:
+                pass
+            return redirect(f'/profile/{id_no}')
+        return render_template('profile.html',User = User,otheruser=True,follow=f)
     else:
         return redirect(url_for('login_register'))
+
+@app.route('/usernews/<id>')
+@app.route('/usernews')
+async def usernews(id=None):
+    if 'id_no' in session :
+        if id:
+          article =  News.query.filter_by(User_ID = id).all()
+          article.reverse()
+          User = Profile_info.query.filter_by(ID_Number = id).first()
+          return render_template('usernews.html',Article=article,otheruser=True,User=User)
+        else:
+          id_no = getid()
+          article =  News.query.filter_by(User_ID = id_no).all()
+          article.reverse()
+          return render_template('usernews.html',Article=article)
+    else:
+        return redirect(url_for('login_register'))
+
 
 @app.route('/readinglist')
 async def read():
     if 'id_no' in session :
         id_no = getid()
         User =  Profile_info.query.filter_by(ID_Number = id_no).first()
-        article =  News.query.filter_by(User_ID = id_no).all()
         allnews = News.query.all()
-        return render_template('readinglist.html',Article=article,Allnews =allnews,User = User )
+        allnews.reverse()
+        return render_template('readinglist.html',Allnews =allnews,User = User )
     else:
         return redirect(url_for('login_register'))
 
@@ -247,9 +317,8 @@ async def follower():
     if 'id_no' in session :
         id_no = getid()
         follower = Followed.query.filter_by(Followed_ID = id_no)
-        article = News.query.filter_by(User_ID = id_no).all()
         alluser = Profile_info.query.all()
-        return render_template('follower.html',Article=article,Alluser = alluser,Follower = follower )
+        return render_template('follower.html',Alluser = alluser,Follower = follower )
     else:
         return redirect(url_for('login_register'))
 
@@ -259,9 +328,8 @@ async def following():
     if 'id_no' in session :
         id_no = getid()
         User = Profile_info.query.filter_by(ID_Number = id_no).first()
-        article = News.query.filter_by(User_ID = id_no).all()
         alluser = Profile_info.query.all()
-        return render_template('following.html',Article=article,Alluser = alluser,User = User )
+        return render_template('following.html',Alluser = alluser,User = User )
     else:
         return redirect(url_for('login_register'))
 
@@ -272,6 +340,7 @@ async def chatlist():
         id_no = getid()
         User = Profile_info.query.filter_by(ID_Number = id_no).first()
         article = News.query.filter_by(User_ID = id_no).all()
+        article.reverse()
         follower = Followed.query.filter_by(Followed_ID = id_no)
         alluser = Profile_info.query.all()
         return render_template('chatlist.html',Article=article,User = User,Alluser = alluser,Follower = follower )
@@ -323,19 +392,20 @@ async def news(article=None):
     if article:
         if 'id_no' in session:  
           id = getid()
-          if request.method == 'POST':
-            read = request.form['read']
+          read = request.args.get('read')
+          if read:
             if Reading_list.query.filter_by(User_ID = id,News_ID = read).first():
                 pass
             elif read:
                 Create = Reading_list(User_ID = id, News_ID = read)
                 db.session.add(Create)
                 db.session.commit()
+            return redirect(f'/news/{read}')
         try: 
            No_post = params['no_of_post']           
            page = request.args.get('page')
            if (not str(page).isnumeric()):
-                 page = 1
+                page = 1
            page = int(page)
            Article = News.query.filter_by(News_ID = article).first()
            if Article:
@@ -346,7 +416,8 @@ async def news(article=None):
                   unknow = False
               other = News.query.filter_by(Tag= Article.Tag).all()
               other.reverse()
-              return render_template('news.html',Article= Article,Owner = owner,Unknow = unknow,Articles= other)
+              alluser = Profile_info.query.all()
+              return render_template('news.html',Article= Article,Owner = owner,Unknow = unknow,Relate= other,Alluser = alluser)
            Article = News.query.filter_by(Tag = article).all()
            if Article:
               Article.reverse()
@@ -363,15 +434,26 @@ async def news(article=None):
                  old = "/news/"+ article +"?page="+ str(page+1)
               return render_template('newspage.html',Article= Article,Owner=owner,prev=prev,old=old,num=page,last=last)
            else:
-                flash('NEWS is NOT Available Sorry !!')
-                return redirect(url_for('home'))
-
+              flash('NEWS is NOT Available Sorry !!')
+              return redirect(url_for('home'))
         except Exception as e:
             flash('NEWS is NOT Available Sorry !!')
             return redirect(url_for('home'))
-
     else:
         return redirect(url_for('home'))
+
+
+@app.route('/news/comment/<article>',methods=['POST'])
+async def comment(article):
+    if 'id_no' in session:
+        id_no = str(escape(session['id_no']))
+        message = request.form['comment']
+        Create = Comments(User_ID=id_no,News_ID=article,Comment=message)
+        db.session.add(Create)
+        db.session.commit()
+        return redirect(f'/news/{article}')
+    else:
+        return redirect('/repoter') 
 
 
 @app.route('/editnews')
@@ -412,7 +494,6 @@ async def contact():
     return render_template('contact.html')
 
 
-
 @app.route('/news/delete/<article>')
 async def deletenews(article):
     if 'id_no' in session :
@@ -427,12 +508,15 @@ async def deletenews(article):
     else:
         return redirect(url_for('login_register'))
 
+
 @app.route('/chats/<friend>')
 async def chats(friend):
     if 'id_no' in session:
-        return render_template('chats.html')
+        Friend = Profile_info.query.filter_by(ID_Number = friend).first()
+        return render_template('chats.html',Friend=Friend)
     else:
         return redirect(url_for('home'))
+
 
 if __name__ == '__main__':
    db.create_all()

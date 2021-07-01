@@ -1,1 +1,0 @@
-app.config['SQLALCHEMY_DATABASE_URI'] = params['prod_uri']

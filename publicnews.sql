@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 25, 2021 at 08:28 AM
+-- Generation Time: Jul 01, 2021 at 06:29 PM
 -- Server version: 10.4.19-MariaDB
 -- PHP Version: 8.0.7
 
@@ -20,6 +20,29 @@ SET time_zone = "+00:00";
 --
 -- Database: `publicnews`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `comments`
+--
+
+CREATE TABLE `comments` (
+  `id` int(11) NOT NULL,
+  `News_ID` varchar(100) NOT NULL,
+  `User_ID` varchar(100) NOT NULL,
+  `Comment` text NOT NULL,
+  `Date` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `comments`
+--
+
+INSERT INTO `comments` (`id`, `News_ID`, `User_ID`, `Comment`, `Date`) VALUES
+(1, 'A1VX52177Y00CJQF6HZKUWRWWWXU3D', 'QKZ8CJOTIZ', 'best news', '2021-07-01 14:36:24'),
+(2, 'A1VX52177Y00CJQF6HZKUWRWWWXU3D', 'QKZ8CJOTIZ', 'Thank for this news this news is awesome and knowledge full .................................................', '2021-07-01 14:44:55'),
+(4, 'A1VX52177Y00CJQF6HZKUWRWWWXU3D', 'MFU4CQDRYG', 'best bro.....', '2021-07-01 15:36:09');
 
 -- --------------------------------------------------------
 
@@ -59,7 +82,11 @@ CREATE TABLE `followed` (
 
 INSERT INTO `followed` (`id`, `User_ID`, `Followed_ID`) VALUES
 (1, 'MFU4CQDRYG', 'QKZ8CJOTIZ'),
-(9, 'LPJ41OOMNB', 'QKZ8CJOTIZ');
+(9, 'LPJ41OOMNB', 'QKZ8CJOTIZ'),
+(12, 'CS4FZR4FAS', 'LPJ41OOMNB'),
+(13, 'CS4FZR4FAS', 'QKZ8CJOTIZ'),
+(15, 'QKZ8CJOTIZ', 'True'),
+(21, 'QKZ8CJOTIZ', 'LPJ41OOMNB');
 
 -- --------------------------------------------------------
 
@@ -92,7 +119,8 @@ INSERT INTO `news` (`Srno`, `User_ID`, `News_ID`, `Thumbnail`, `Title`, `Descrip
 (9, 'LPJ41OOMNB', 'Z9NIY3HVLBWBI5XG5DI54DU637FIKM', 'https://www.traveldailynews.com/assets/thumbnails/9f/9f8fca7a41b064d7f59c77948fe8f24a.jpg', 'World’s top hotel brands lose nearly $23 billion in brand value', 'As holidays are cancelled and people are instructed to work from home, the hospitality sector has reached an almost complete standstill both from tourism, as well as corporate travel. As a result, the total value of the top 50 most valuable hotel brands has decreased 33% year-on-year, down from US$70.2 billion in 2020 to US$47.4 billion in 2021, according to the latest Brand Finance Hotels 50 2021 report.\r\n\r\nSavio D’Souza, Valuation Director, Brand Finance, commented: “The hotels sector has completely ground to a halt over the previous year, the repercussions of which are demonstrated by the sharp brand value declines for almost all of the top 50 most valuable hotel brands. The sector is a resilient one, however. As the world begins to open back up again, we are already witnessing a strong improvement in bookings and occupancy levels across the board, showcasing the strength of brands despite the turmoil of the last year.”\r\n\r\nHilton retains top spot\r\nHilton once again is the world’s most valuable hotel brands, despite recording a 30% drop in brand value to US$7.6 billion. While Hilton’s revenue has taken a significant hit since the outbreak of the pandemic, the brand is showing confidence in its growth strategy, announcing a further 17,400 rooms to its pipeline, bringing the total to over 400,000 new rooms planned – an uplift of 8% on the previous year. Hilton also boasts the most valuable hotel portfolio, with its seven brands that feature in the ranking reaching a total brand value of US$13.8 billion.\r\n\r\nHilton’s rival, Marriott (down 60% to US$2.4 billion), has dropped down to 5th spot from 2nd, after losing more than half of its brand value. Last year, the brand’s worldwide revenue available per room was down 60% from 2019 and global occupancy was just 36% for the year.\r\n\r\nHyatt checks into 2nd spot\r\nBucking the sector trend as one of only two brands in the ranking to record brand value growth is Hyatt (up 4% to US$4.7 billion). Despite the pandemic impacting its performance greatly, Hyatt’s net rooms growth has been strong, opening 72 hotels and entering 27 new markets. Furthermore, the brand has continued to execute new signings to maintain its pipeline, which represent over 40% growth of existing hotel rooms in the future.\r\n\r\nTaj is sector’s strongest\r\nIn addition to measuring overall brand value, Brand Finance also evaluates the relative strength of brands, based on factors such as marketing investment, customer familiarity, staff satisfaction, and corporate reputation. According to these criteria, Taj (brand value US$296 million) is the world’s strongest hotel brand, with a Brand Strength Index (BSI) score of 89.3 out of 100 and a corresponding AAA brand strength rating.\r\n\r\nRenowned for its world-class customer service, the luxury hotel chain scores very well in our Global Brand Equity Monitor for consideration, familiarity, recommendation, and reputation especially across its home market of India.  \r\n\r\nTaj’s successful implementation of its 5-year plan - which focuses on selling non-core assets, becoming less ownership driven and reducing dependence on the luxury space – followed by the speedy adoption of its new R.E.S.E.T 2020 strategy, which provides a transformative framework to help the brand overcome the challenge of the pandemic, has contributed to the brand’s re-entrance into the ranking for the first time since 2016 in 38th spot.\r\n\r\nBrand Finance Leisure & Tourism 10 2021\r\nAlongside analysing the world’s most valuable hotel brands, Brand Finance also ranks the top 10 most valuable brands in the wider leisure & tourism industry. This year, the total value of the world’s top 10 most valuable leisure & tourism brands has declined by 40%.\r\n\r\nDespite booking.com recording a 19% brand value loss to US$8.3 billion, it has overtaken Airbnb (down 67% to US$3.4 billion) and Trip.com Group (down 38% to US$3.5 billion) to become the most valuable leisure & tourism brand in the world. The fastest falling brand this year, Airbnb, cut a quarter of its workforce last year, and was forced to scale back on new initiatives that it had in the pipeline, including luxury resorts and flights.\r\n\r\nHappy Valley (down 37% to US$1.2 billion) is the sector’s strongest brand, with a BSI score of 84.1 out of 100 and a corresponding AAA- brand strength rating.\r\n\r\nThree new entrants in ranking\r\nThere are three new entrants into the ranking this year, AMC Theatres (brand value US$1.8 billion) in 7th, Priceline (brand value US$1.5 billion) in 8th, and Shenzhen Overseas Chinese Town (brand value to US$1.3 billion) in 9th.\r\n\r\nThe world’s largest cinema chain, AMC, has struggled as cinemas were shut amid global lockdowns. The brand will be hoping their fortunes will reverse as customers slowly start to return to the big screen and blockbusters that have been delayed are finally released. \r\n\r\nThe three new entrants have pushed out three cruise brands, which have dropped out the ranking this year: Royal Caribbean International, Norwegian Cruise, and Carnival Cruise Lines.\r\n\r\nBrand Finance Hotels 50 2021 report \r\nLeisure & Tourism 10 2021 ranking \r\n \r\n\r\n\r\n\r\n', 'AMERICA', 'Travel', '2021-06-24'),
 (10, 'LPJ41OOMNB', 'AMBFYP9TO34V8A2PJ22HF5ISR851YG', 'https://images.indianexpress.com/2021/06/Mukesh-Ambani-RIL-AGM.jpg', 'Reliance AGM 2021 Highlights: Saudi Aramco Chairman Yasir Al-Rumayyan joins RIL board', 'RIL AGM 2021 Highlights: Reliance Industries (RIL) Chairman Mukesh Ambani on Thursday announced that Saudi Aramco Chairman and Governor of the kingdom’s wealth fund Public Investment Fund Yasir Al-Rumayyan will be joining the RIL board as an independent director.\r\n\r\nSpeaking at the conglomerate’s 44th annual general meeting (AGM), the second virtual AGM following the coronavirus pandemic, Ambani said that Al-Rumayyan’s joining also marks the beginning of internationalisation of Reliance.\r\n\r\n“I am sure we will immensely benefit from his rich experience with one of the world’s largest companies, and also one of the largest sovereign wealth funds in the world,” Ambani said.\r\n\r\n\r\nIt was earlier rumoured that Al-Rumayyan may be inducted on the board of RIL.\r\n\r\nApart from this, Ambani during his AGM speech announced RIL’s plans for the new energy business. He said that RIL has established the Reliance New Energy Council with some of the finest minds, globally. The company has started work on developing the Dhirubhai Ambani Green Energy Giga Complex on 5,000 acres in Jamnagar.\r\n\r\n“It will be amongst the largest such integrated renewable energy manufacturing facilities in the world,” he said. RIL’s overall initial investment from its own internal resources in the New Energy business will be Rs 75,000 (over $10 billion) crore in 3 years.\r\n\r\nSpeaking on RIL’s retail arm, Ambani said despite challenging and restrictive operating conditions, Reliance Retail continued to deliver industry-leading returns. The company added 1,500 new stores, which is amongst the largest retail expansion undertaken by any retailer during this period, taking their store count to 12,711.\r\n\r\nHe said that Reliance Retail is committed to growing its business so that it is among the top 10 retailers globally. “I am confident that Reliance Retail is on a hyper-growth trajectory to grow at least 3x in the next 3-5 years,” Ambani said.', 'India', 'Technology', '2021-06-24'),
 (11, 'LPJ41OOMNB', 'WXPPL5DD7E5N3NCIAD5LYGLHDPHRD7', 'https://ichef.bbci.co.uk/news/976/cpsprodpb/174FE/production/_119068459_068181064.jpg', 'Britney Spears speaks out against \'abusive\' conservatorship in court', 'US pop star Britney Spears has launched a blistering attack on the \"abusive\" conservatorship that has controlled her life for 13 years.\r\n\r\nShe said she was traumatised and cried every day, telling a judge in Los Angeles: \"I just want my life back\".\r\n\r\nSpears, 39, also said she had been denied the right to have more children and was put on the psychiatric drug lithium against her wishes.\r\n\r\nHer father was granted control over her affairs by court order in 2008.\r\n\r\nThe order was granted after the star was put in hospital amid concerns over her mental health, and it has been extended for more than a decade since.\r\n\r\nBritney Spears: Everything she said in court\r\nTimberlake leads outpouring of support for Britney\r\nThe conservatorship case explained\r\nThe special hearing on Wednesday was the first time Spears has spoken in open court about her case. Los Angeles Superior Court Judge Brenda Penny thanked Spears for her \"courageous\" words during the proceedings.\r\n\r\nIt followed much speculation about the pop star\'s situation, with fans eagerly combing her social media output for clues. A fan-led movement, known as #FreeBritney, has campaigned for her legal freedom for years.', 'AMERICA', 'Politics', '2021-06-24'),
-(12, 'LPJ41OOMNB', 'NPPLRZDOAGFDVEFD65U56DF3VC3BYU', 'https://ichef.bbci.co.uk/news/976/cpsprodpb/124C3/production/_119074947_gettyimages-1324249337.jpg', 'Covid-19: Europe braces for surge in Delta variant', 'German Chancellor Angela Merkel has warned that Europe is \"on thin ice\" as the Delta variant of Covid spreads on the continent.\r\n\r\nHer warning came as EU health officials said the variant would account for 90% of the bloc\'s cases by late August.\r\n\r\nThe spread could disrupt plans for lifting restrictions during the summer.\r\n\r\nThe Alpha variant, first discovered in the UK, hit Europe hard early this year and Delta, now dominant in the UK, is thought 40%-60% more transmissible.\r\n\r\nAndrea Ammon, the director of the European Centre for Disease Prevention and Control (ECDC), said on Wednesday that the spread of the Delta variant showed the importance of speeding up vaccinations in Europe, as \"preliminary data shows that it can also infect individuals that have received only one dose of the currently available vaccines\".\r\n\r\nTwo doses offered \"high protection\" against the Delta (B.1.617.2) variant, she added.\r\n\r\nHeadache and runny nose linked to Delta variant\r\nHow is Europe lifting lockdown restrictions?\r\nScientists say too early to tell risk of Delta plus variant\r\nDelta, first identified in India, now accounts for almost all new infections in the UK.\r\n\r\nOn Wednesday Mrs Merkel called for a more co-ordinated EU response and said all member states should quarantine arrivals from the UK considering the dangers of the spread of Delta.\r\n\r\nThe UK is not on the EU\'s list of safe countries, due to the spread of Delta, but that list is not binding on member states.\r\n\r\nUK Prime Minister Boris Johnson has said that while fully vaccinating people offered \"a good way forward\" for resuming travel, this summer would not be \"like every other. This is going to be a more difficult summer to take a holiday\".\r\n\r\nHere is how different parts of Europe are dealing with the threat of Delta.', 'German', 'Health', '2021-06-24');
+(12, 'LPJ41OOMNB', 'NPPLRZDOAGFDVEFD65U56DF3VC3BYU', 'https://ichef.bbci.co.uk/news/976/cpsprodpb/124C3/production/_119074947_gettyimages-1324249337.jpg', 'Covid-19: Europe braces for surge in Delta variant', 'German Chancellor Angela Merkel has warned that Europe is \"on thin ice\" as the Delta variant of Covid spreads on the continent.\r\n\r\nHer warning came as EU health officials said the variant would account for 90% of the bloc\'s cases by late August.\r\n\r\nThe spread could disrupt plans for lifting restrictions during the summer.\r\n\r\nThe Alpha variant, first discovered in the UK, hit Europe hard early this year and Delta, now dominant in the UK, is thought 40%-60% more transmissible.\r\n\r\nAndrea Ammon, the director of the European Centre for Disease Prevention and Control (ECDC), said on Wednesday that the spread of the Delta variant showed the importance of speeding up vaccinations in Europe, as \"preliminary data shows that it can also infect individuals that have received only one dose of the currently available vaccines\".\r\n\r\nTwo doses offered \"high protection\" against the Delta (B.1.617.2) variant, she added.\r\n\r\nHeadache and runny nose linked to Delta variant\r\nHow is Europe lifting lockdown restrictions?\r\nScientists say too early to tell risk of Delta plus variant\r\nDelta, first identified in India, now accounts for almost all new infections in the UK.\r\n\r\nOn Wednesday Mrs Merkel called for a more co-ordinated EU response and said all member states should quarantine arrivals from the UK considering the dangers of the spread of Delta.\r\n\r\nThe UK is not on the EU\'s list of safe countries, due to the spread of Delta, but that list is not binding on member states.\r\n\r\nUK Prime Minister Boris Johnson has said that while fully vaccinating people offered \"a good way forward\" for resuming travel, this summer would not be \"like every other. This is going to be a more difficult summer to take a holiday\".\r\n\r\nHere is how different parts of Europe are dealing with the threat of Delta.', 'German', 'Health', '2021-06-24'),
+(13, 'CS4FZR4FAS', 'A1VX52177Y00CJQF6HZKUWRWWWXU3D', 'https://iottechnews.com/wp-content/uploads/sites/5/2021/06/iot-saving-power-low-devices-1536x982.jpg', 'Saving power in low-power wireless radio systems', 'The number of connected IoT devices is forecast to jump to 125 billion by 2030. This is not difficult to believe, as global IoT spending reached $745 billion in 2019. Against this backdrop, electronics designers are under pressure to optimise designs especially when it comes to battery life.\r\n\r\nIn this article, Dunstan Power, Director of ByteSnap Design, offers insights into key considerations for designing low power wireless radio systems. \r\n\r\nThe balancing act\r\n\r\nReducing the power consumption of a device while attempting to achieve the desired level of functionality is one of the most challenging aspects of low power design. Every successful low power wireless device currently available is the result of a successful balancing act, where the developers have weighed their priorities and made a series of compromises that have resulted in a functioning device. \r\n\r\nSoftware Design\r\n\r\nSystem choices made at the beginning of a project dictate what can be achieved. Designing for low power from the outset is recommended, with the first consideration being the type of radio to deploy. The choice is vast from short range radios, like ZigBee, Thread, Bluetooth and Wi-Fi to long-range low power radio, including LoRa, SigFox and Weightless, and cellular radio systems.\r\n\r\nSome radio wavelengths propagate much better than others, which means increased power efficiency. Lower frequencies tend to propagate better than higher frequencies, but the compromise is that the potential data rate is reduced. Higher frequencies tend to cover shorter distances, but have higher bandwidth and faster transmission speeds. The longer the distance signals need to travel, the slower the speed you can use generally.  \r\n\r\nAlso consider the radio system topology – this can increase the efficiency and speed of the system when managed properly. Star topologies are ideal when the master device is not battery powered and is able to manage the network load alone. Alternatively, where all devices are low power, a mesh network with multiple repeaters could be more suitable.\r\n\r\nThe choice of microcontroller is usually straightforward and a designer will typically have a family/manufacturer they are familiar with. Most small processors these days – PIC-, AVR-, ARM-based – have low power modes that can be used to decrease the power required during operation. They rely on an interrupt to wake them up again. Many of these also have a fast wake up system to keep on time to a minimum and thus reduce the power used.\r\n\r\nThe range of low power wireless means that battery choice varies across every project. However, when the radio system requires infrequent bursts of current, or the battery needs to be rechargeable, options are often quickly limited.\r\n\r\nBattery manufacturer data sheets can help, but most will show battery discharge curves based on a constant current drain, and usually at a higher current draw than a low power system will use. Some interpolation must be used to figure out what will happen in a low power system.\r\n\r\nAlso, radio systems like this tend to use minimal power whilst sleeping and then require large pulses of current when awake for receiving and transmitting. Some batteries are not suited to this. \r\n\r\nEnvironmental factors also affect battery choice and their use. A cold environment will reduce a battery’s voltage and the overall useful battery life of the device. High temperatures can also adversely affect some batteries.\r\n\r\nThe battery selection process is consequently iterative. To find the best candidate, it is worth trialling a few types that fit the specifications. This table showcases a few characteristics of some common battery types:', 'America', 'Technology', '2021-06-29');
 
 -- --------------------------------------------------------
 
@@ -116,10 +144,11 @@ CREATE TABLE `profile_info` (
 --
 
 INSERT INTO `profile_info` (`id`, `ID_Number`, `Name`, `Bio`, `Country`, `Phone_no`, `Email`, `Profile_img`) VALUES
-(3, 'QKZ8CJOTIZ', 'Krishna Pal', 'hola', 'India', '+918318031071', 'Krishnapal2545@gmail.com', 'kk.png'),
+(3, 'QKZ8CJOTIZ', 'Krishna Pal', 'hola my name is krishna', 'India', '+918318031071', 'Krishnapal2545@gmail.com', 'kk.png'),
 (4, 'MFU4CQDRYG', 'Sumit Rajendra Vishwakarama', 'hiii', 'America', '8828081171', 'SumitVish@gmail.com', NULL),
 (5, 'RW8AG9RN38', 'Chetan Prajapat', 'my name is chetna I love coding', 'Africa', '+918318031071', 'Chetan@gmail.com', 'user3.png'),
-(6, 'LPJ41OOMNB', 'Meera Devi Pal', 'Hii I am mother of Mr. KrishnaKumar Pal', 'Bangladesh', '9819753541', 'Palmeera2087@gmail.com', NULL);
+(6, 'LPJ41OOMNB', 'Meera Devi Pal', 'Hii I am mother of Mr. KrishnaKumar Pal', 'Bangladesh', '9819753541', 'Palmeera2087@gmail.com', NULL),
+(7, 'CS4FZR4FAS', 'Krishna Kumar Rajendra Prasad Pal', 'Hello my name is Krishna Kumar Rajendra Prasad Pal', 'INDIA', '8318031071', 'Krishnapal2545@gmail.com', 'Krishna_photo.jpg');
 
 -- --------------------------------------------------------
 
@@ -141,7 +170,12 @@ INSERT INTO `reading_list` (`id`, `News_ID`, `User_ID`) VALUES
 (1, 'XSI24V7YA7NMYQIDO9CTJ44BOEO5BQ', 'QKZ8CJOTIZ'),
 (2, 'BXMOAS2PIHFT2CPC4NXQJGRDUBPM9Y', 'QKZ8CJOTIZ'),
 (3, 'NPPLRZDOAGFDVEFD65U56DF3VC3BYU', 'QKZ8CJOTIZ'),
-(4, 'WXPPL5DD7E5N3NCIAD5LYGLHDPHRD7', 'QKZ8CJOTIZ');
+(4, 'WXPPL5DD7E5N3NCIAD5LYGLHDPHRD7', 'QKZ8CJOTIZ'),
+(5, 'NPPLRZDOAGFDVEFD65U56DF3VC3BYU', 'CS4FZR4FAS'),
+(6, 'WXPPL5DD7E5N3NCIAD5LYGLHDPHRD7', 'CS4FZR4FAS'),
+(7, 'A1VX52177Y00CJQF6HZKUWRWWWXU3D', 'QKZ8CJOTIZ'),
+(10, 'TWGFTUBJPWWGBTHGMRVMD4H934K4FG', 'QKZ8CJOTIZ'),
+(11, 'A1VX52177Y00CJQF6HZKUWRWWWXU3D', 'MFU4CQDRYG');
 
 -- --------------------------------------------------------
 
@@ -161,6 +195,7 @@ CREATE TABLE `user_credential` (
 --
 
 INSERT INTO `user_credential` (`ID_Number`, `Phone_Number`, `Username`, `Password`) VALUES
+('CS4FZR4FAS', '+918318031071', 'krishnapal2545', 'Tata@123'),
 ('LPJ41OOMNB', '12345678', 'Meera', 'Tata'),
 ('MFU4CQDRYG', '34567', 'KK_PL', 'Tata'),
 ('QKZ8CJOTIZ', '34567', 'krishna', 'Tata'),
@@ -169,6 +204,12 @@ INSERT INTO `user_credential` (`ID_Number`, `Phone_Number`, `Username`, `Passwor
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `comments`
+--
+ALTER TABLE `comments`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `contact`
@@ -186,7 +227,8 @@ ALTER TABLE `followed`
 -- Indexes for table `news`
 --
 ALTER TABLE `news`
-  ADD PRIMARY KEY (`Srno`);
+  ADD PRIMARY KEY (`Srno`),
+  ADD KEY `news_ibfk_1` (`User_ID`);
 
 --
 -- Indexes for table `profile_info`
@@ -212,6 +254,12 @@ ALTER TABLE `user_credential`
 --
 
 --
+-- AUTO_INCREMENT for table `comments`
+--
+ALTER TABLE `comments`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
 -- AUTO_INCREMENT for table `contact`
 --
 ALTER TABLE `contact`
@@ -221,25 +269,25 @@ ALTER TABLE `contact`
 -- AUTO_INCREMENT for table `followed`
 --
 ALTER TABLE `followed`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `news`
 --
 ALTER TABLE `news`
-  MODIFY `Srno` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `Srno` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `profile_info`
 --
 ALTER TABLE `profile_info`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `reading_list`
 --
 ALTER TABLE `reading_list`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- Constraints for dumped tables
