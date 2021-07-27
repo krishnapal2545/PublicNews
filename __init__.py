@@ -23,11 +23,11 @@ SQLALCHEMY_ENGINE_OPTIONS = {
     "pool_size": 30000,
 }
 
-# if params['local_server']:
-#     app.config['SQLALCHEMY_DATABASE_URI'] = params['local_uri']
-# else:
-#     app.config['SQLALCHEMY_DATABASE_URI'] = params['prod_uri']
-app.config['SQLALCHEMY_DATABASE_URI'] = params['prod_uri']
+if params['local_server']:
+    app.config['SQLALCHEMY_DATABASE_URI'] = params['local_uri']
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = params['prod_uri']
+# app.config['SQLALCHEMY_DATABASE_URI'] = params['prod_uri']
 app.config['SECRET_KEY'] = "sending messages"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['SQLALCHEMY_ENGINE_OPTIONS']= SQLALCHEMY_ENGINE_OPTIONS
@@ -135,7 +135,7 @@ async def topnews(type=None):
         news = newsapi.get_everything(q='Travel')
     else:
         news = newsapi.get_top_headlines(country="in")
-    return render_template('topnews.html',Article = news['articles'])
+    return render_template('topnews.html',Article = news['articles'],ID_Number = escape(session['id_no']))
    except Exception as e:
        flash(' No Internet Connection ')
        return redirect('/')
@@ -251,6 +251,7 @@ async def otherprofile(user_id=None):
             else:
               id_no = user_id
         User = Profile_info.query.filter_by(ID_Number = id_no).first()
+        f=False
         for i in otheruser.Friends:
             if i.Followed_ID == id_no:
                 f=True
@@ -370,7 +371,7 @@ async def addnews():
                    break
             id_no = getid()          
             title = request.form['title']
-            thumb = request.form['thumbnail']
+            thumb = f"https://drive.google.com/uc?export=view&id={request.form['thumbnail']}"
             locat = request.form['location']
             tag = request.form['tag']
             descrip = request.form['discrip']
@@ -393,14 +394,23 @@ async def news(article=None):
         if 'id_no' in session:  
           id = getid()
           read = request.args.get('read')
+          unread = request.args.get('unread')
           if read:
             if Reading_list.query.filter_by(User_ID = id,News_ID = read).first():
                 pass
-            elif read:
+            else :
                 Create = Reading_list(User_ID = id, News_ID = read)
                 db.session.add(Create)
                 db.session.commit()
             return redirect(f'/news/{read}')
+          if unread:
+            if Reading_list.query.filter_by(User_ID = id,News_ID = unread).first():
+                Create = Reading_list.query.filter_by(User_ID = id, News_ID = unread).first()
+                db.session.delete(Create)
+                db.session.commit()
+            else:
+               pass
+            return redirect(f'/news/{unread}')
         try: 
            No_post = params['no_of_post']           
            page = request.args.get('page')
@@ -409,15 +419,18 @@ async def news(article=None):
            page = int(page)
            Article = News.query.filter_by(News_ID = article).first()
            if Article:
+              feed=False
               if 'id_no' in session: 
                 if Article.User_ID == id:
                   owner = True
+                if Reading_list.query.filter_by(User_ID = getid(),News_ID = Article.News_ID).first():
+                  feed=True
               else:
                   unknow = False
               other = News.query.filter_by(Tag= Article.Tag).all()
               other.reverse()
               alluser = Profile_info.query.all()
-              return render_template('news.html',Article= Article,Owner = owner,Unknow = unknow,Relate= other,Alluser = alluser)
+              return render_template('news.html',Article= Article,Owner = owner,Unknow = unknow,Relate= other,Alluser = alluser,Feed=feed)
            Article = News.query.filter_by(Tag = article).all()
            if Article:
               Article.reverse()
@@ -520,4 +533,4 @@ async def chats(friend):
 
 if __name__ == '__main__':
    db.create_all()
-   app.run(debug=False)
+   app.run(debug=True)
