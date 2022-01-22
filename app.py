@@ -1,4 +1,4 @@
-from newsapi.newsapi_client import NewsApiClient
+from newsapi import NewsApiClient
 from sqlalchemy.orm import backref
 from werkzeug.utils import secure_filename
 from flask import Flask , render_template , request , redirect , url_for , flash , session
@@ -33,6 +33,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['SQLALCHEMY_ENGINE_OPTIONS']= SQLALCHEMY_ENGINE_OPTIONS
 app.config['MAX_CONTENT_LENGTH'] = 16* 1024 *1024
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 db = SQLAlchemy(app)
 
 class User_credential(db.Model):
@@ -135,8 +136,9 @@ async def topnews(type=None):
         news = newsapi.get_everything(q='Travel')
     else:
         news = newsapi.get_top_headlines(country="in")
-    return render_template('topnews.html',Article = news['articles'],ID_Number = escape(session['id_no']))
+    return render_template('topnews.html',Article = news['articles'])
    except Exception as e:
+       print(f"Exception is :->{e}")
        flash(' No Internet Connection ')
        return redirect('/')
 
