@@ -1,9 +1,9 @@
 {
      "params":
      {
-         "local_server":"False",
+         "local_server":"True",
          "local_uri": "mysql+pymysql://root:@localhost/publicnews",
          "prod_uri": "mysql+pymysql://root:@public-news.herokuapp.com//publicnews",
-         "no_of_post": 8
+         "no_of_post": 4
      }
 }

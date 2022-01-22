@@ -1,111 +1,24 @@
 from newsapi import NewsApiClient
-import asyncio
 from werkzeug.utils import secure_filename
-from flask import Flask , render_template , request , redirect , url_for , flash , session
+from flask import render_template , request , redirect , url_for , flash , session
 from markupsafe import escape
-import string,random , datetime , math , json , os
-from flask_sqlalchemy import SQLAlchemy
+import string,random , datetime , math ,  os
+from model import *
 
-
-with open('config.json','r') as c:
-    params = json.load(c)["params"]
-
-UPLOAD_FOLDER = 'static/'
 ALLOWED_EXTENSIONS = { 'png', 'jpg', 'jpeg', }
-app = Flask(__name__)
-
 newsapi = NewsApiClient(api_key='b92898cd55d748f0a04175e18f3bcb82')
 
-SQLALCHEMY_ENGINE_OPTIONS = {
-    "max_overflow": 10000,
-    "pool_pre_ping": True,
-    "pool_recycle": 60 * 60,
-    "pool_size": 30000,
-}
+app = create_app()
+db.init_app(app)
 
-# if params['local_server']:
-#     app.config['SQLALCHEMY_DATABASE_URI'] = params['local_uri']
-# else:
-#     app.config['SQLALCHEMY_DATABASE_URI'] = params['prod_uri']
-app.config['SQLALCHEMY_DATABASE_URI'] = params['prod_uri']
-app.config['SECRET_KEY'] = "sending messages"
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['SQLALCHEMY_ENGINE_OPTIONS']= SQLALCHEMY_ENGINE_OPTIONS
-app.config['MAX_CONTENT_LENGTH'] = 16* 1024 *1024
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+No_post =  params['no_of_post']
 
-db = SQLAlchemy(app)
+tn_article = 20
 
-class User_credential(db.Model):
-    __tablename__ = 'user_credential'
-    ID_Number = db.Column(db.String(10) ,primary_key = True)
-    Phone_Number = db.Column(db.String(15))
-    Username = db.Column(db.String(50))
-    Password = db.Column(db.String(50))
-
-class Profile_info(db.Model):
-    __tablename__ = 'profile_info'
-    id = db.Column(db.Integer, primary_key=True)
-    ID_Number = db.Column(db.String(10),primary_key=True)
-    Name = db.Column(db.String(150))
-    Bio = db.Column(db.String(1000))
-    Country = db.Column(db.String(150))
-    Phone_no = db.Column(db.String(15))
-    Email = db.Column(db.String(150))
-    Profile_img = db.Column(db.String(100))
-    Friends = db.relationship('Followed', backref='profile_info',lazy='dynamic')
-    Reading = db.relationship('Reading_list',backref='profile_info',lazy ='dynamic')
-
-class News(db.Model):
-    __tablename__ = 'news'
-    Srno = db.Column(db.Integer, primary_key=True)
-    User_ID = db.Column(db.String(10),primary_key=True)
-    News_ID = db.Column(db.String(150),primary_key=True)
-    Thumbnail = db.Column(db.String(2048))
-    Title = db.Column(db.String(100))
-    Date = db.Column(db.String(100))
-    Description = db.Column(db.String())
-    Location = db.Column(db.String(10000))
-    Tag = db.Column(db.String(100))
-    Comment = db.relationship('Comments',backref='news',lazy = 'dynamic')
-    
-class Reading_list(db.Model):
-    __tablename__ = 'reading_list'
-    id = db.Column(db.Integer, primary_key=True)
-    News_ID = db.Column(db.String(150))
-    User_ID = db.Column(db.String(100),db.ForeignKey('profile_info.ID_Number'))
-
-class Followed(db.Model):
-    __tablename__ = 'followed'
-    id = db.Column(db.Integer, primary_key=True)
-    User_ID = db.Column(db.String(100),db.ForeignKey('profile_info.ID_Number'))
-    Followed_ID = db.Column(db.String(100))
-
-class Contact(db.Model):
-    __tablename__ = 'contact'
-    id = db.Column(db.Integer, primary_key=True)
-    Name = db.Column(db.String(100))
-    Email = db.Column(db.String(100))
-    Message = db.Column(db.String())
-
-class Comments(db.Model):
-    __tablename__ = 'comments'
-    id = db.Column(db.Integer, primary_key=True)
-    News_ID = db.Column(db.String(100), db.ForeignKey('news.News_ID'))
-    User_ID = db.Column(db.String(100))
-    Comment = db.Column(db.String())
-    Date = db.Column(db.DateTime(),default=datetime.datetime.utcnow)
-
-# @celery.task(bind=True)
 def getid():
     id_no = escape(session['id_no'])
     User = User_credential.query.filter_by(ID_Number = str(id_no)).first()
     return User.ID_Number
-
-def allnews():
-    Article = News.query.all()
-    Article.reverse()
-    return Article
 
 @app.before_request
 def before_request():
@@ -136,36 +49,34 @@ def topnews(type=None):
         news = newsapi.get_everything(q='Travel')
     else:
         news = newsapi.get_top_headlines(country="in")
+    
     return render_template('topnews.html',Article = news['articles'])
    except Exception as e:
-       print(f"Exception is :->{e}")
        flash(' No Internet Connection ')
        return redirect('/')
 
-
 @app.route('/')
 def home():
-    No_post =  params['no_of_post']
-    Article = allnews()
-    last = math.ceil( len(Article)/int(No_post))
+    lastarticle = math.ceil( News.query.count()/int(No_post))
     page = request.args.get('page')
     if (not str(page).isnumeric()):
         page = 1
     page = int(page)
-    Article = Article[(page-1) * int(No_post) : (page-1) * int(No_post) +int(No_post) ]
+    Article = News.query.all()[(page-1) * int(No_post) : (page-1) * int(No_post) +int(No_post) ]
+    Article.reverse()
     if page == 1:
         prev = "#"
         old = "/?page="+ str(page+1)
-    elif page == last :
+    elif page == lastarticle :
         prev = "/?page="+ str(page-1)
         old = "#"
     else:
         prev = "/?page="+ str(page-1)
         old = "/?page="+ str(page+1)
     if 'id_no' in session :
-        return render_template('home.html',ID_Number = escape(session['id_no']),Article=Article,prev=prev,old=old,num=page,last=last)
+        return render_template('home.html',ID_Number = escape(session['id_no']),Article=Article,prev=prev,old=old,num=page,last=lastarticle)
     
-    return render_template('home.html',Article=Article,prev=prev,old=old,num=page,last=last)
+    return render_template('home.html',Article=Article,prev=prev,old=old,num=page,last=lastarticle)
 
 
 @app.route('/repoter',methods=['GET', 'POST'])
@@ -534,5 +445,5 @@ def chats(friend):
 
 
 if __name__ == '__main__':
-   db.create_all()
+   db.create_all(app=create_app())
    app.run(debug=True)
