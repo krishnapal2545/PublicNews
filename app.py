@@ -23,11 +23,11 @@ SQLALCHEMY_ENGINE_OPTIONS = {
     "pool_size": 30000,
 }
 
-if params['local_server']:
-    app.config['SQLALCHEMY_DATABASE_URI'] = params['local_uri']
-else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = params['prod_uri']
-# app.config['SQLALCHEMY_DATABASE_URI'] = params['prod_uri']
+# if params['local_server']:
+#     app.config['SQLALCHEMY_DATABASE_URI'] = params['local_uri']
+# else:
+#     app.config['SQLALCHEMY_DATABASE_URI'] = params['prod_uri']
+app.config['SQLALCHEMY_DATABASE_URI'] = params['prod_uri']
 app.config['SECRET_KEY'] = "sending messages"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['SQLALCHEMY_ENGINE_OPTIONS']= SQLALCHEMY_ENGINE_OPTIONS
