@@ -1,5 +1,5 @@
 from newsapi import NewsApiClient
-from sqlalchemy.orm import backref
+import asyncio
 from werkzeug.utils import secure_filename
 from flask import Flask , render_template , request , redirect , url_for , flash , session
 from markupsafe import escape
@@ -102,19 +102,19 @@ def getid():
     User = User_credential.query.filter_by(ID_Number = str(id_no)).first()
     return User.ID_Number
 
-async def allnews():
+def allnews():
     Article = News.query.all()
     Article.reverse()
     return Article
 
 @app.before_request
-async def before_request():
+def before_request():
     session.permanent = True
     app.permanent_session_lifetime = datetime.timedelta(minutes=60)
 
 @app.route('/topnews/<type>')
 @app.route('/topnews')
-async def topnews(type=None):
+def topnews(type=None):
    try:
     if type == 'Worlds':
         news = newsapi.get_everything(q='World')
@@ -144,9 +144,9 @@ async def topnews(type=None):
 
 
 @app.route('/')
-async def home():
+def home():
     No_post =  params['no_of_post']
-    Article = await allnews()
+    Article = allnews()
     last = math.ceil( len(Article)/int(No_post))
     page = request.args.get('page')
     if (not str(page).isnumeric()):
@@ -169,7 +169,7 @@ async def home():
 
 
 @app.route('/repoter',methods=['GET', 'POST'])
-async def login_register():
+def login_register():
     if request.method == 'POST':
         if request.form['tab']== '1':  
             id_no = request.form['id_no']
@@ -205,16 +205,16 @@ async def login_register():
             flash(f'Your Registration is done and Your ID Number is {id_no}')
     return render_template('login_register.html')
 
-async def profinfo(id_no):
+def profinfo(id_no):
     user = Profile_info.query.filter_by(ID_Number = id_no).first()
     return user
 
-async def profnews(id_no):
+def profnews(id_no):
     article = News.query.filter_by(User_ID = id_no).all()
     return article
 
 @app.route('/profile', methods = ['GET','POST'])
-async def profile():
+def profile():
     if 'id_no' in session :
         id_no =str(escape(session['id_no']))
         if request.method == 'POST':  
@@ -235,15 +235,15 @@ async def profile():
             if bio :  User.Bio = bio
             if f : User.Profile_img = filename
             db.session.commit()
-        User = await profinfo(id_no)
-        article = await profnews(id_no)
+        User = profinfo(id_no)
+        article = profnews(id_no)
         article.reverse()
         return render_template('profile.html',User = User,Article = article,otheruser=False)
     else:
         return redirect(url_for('login_register'))
 
 @app.route('/profile/<user_id>', methods = ['GET','POST'])
-async def otherprofile(user_id=None):
+def otherprofile(user_id=None):
     if 'id_no' in session :
         id_no =str(escape(session['id_no']))
         otheruser = Profile_info.query.filter_by(ID_Number = id_no).first()
@@ -287,7 +287,7 @@ async def otherprofile(user_id=None):
 
 @app.route('/usernews/<id>')
 @app.route('/usernews')
-async def usernews(id=None):
+def usernews(id=None):
     if 'id_no' in session :
         if id:
           article =  News.query.filter_by(User_ID = id).all()
@@ -304,7 +304,7 @@ async def usernews(id=None):
 
 
 @app.route('/readinglist')
-async def read():
+def read():
     if 'id_no' in session :
         id_no = getid()
         User =  Profile_info.query.filter_by(ID_Number = id_no).first()
@@ -316,7 +316,7 @@ async def read():
 
 
 @app.route('/followers')
-async def follower():
+def follower():
     if 'id_no' in session :
         id_no = getid()
         follower = Followed.query.filter_by(Followed_ID = id_no)
@@ -327,7 +327,7 @@ async def follower():
 
 
 @app.route('/following')
-async def following():
+def following():
     if 'id_no' in session :
         id_no = getid()
         User = Profile_info.query.filter_by(ID_Number = id_no).first()
@@ -338,7 +338,7 @@ async def following():
 
 
 @app.route('/chatlist')
-async def chatlist():
+def chatlist():
     if 'id_no' in session :
         id_no = getid()
         User = Profile_info.query.filter_by(ID_Number = id_no).first()
@@ -352,7 +352,7 @@ async def chatlist():
 
 
 @app.route('/logout')
-async def logout():
+def logout():
     if 'id_no' in session :
         session.pop('id_no', None)
         return redirect(url_for('home'))
@@ -361,7 +361,7 @@ async def logout():
 
 
 @app.route('/addnews',methods=['GET', 'POST'])
-async def addnews():
+def addnews():
     if 'id_no' in session:
         if request.method == 'POST':
             while True :
@@ -389,7 +389,7 @@ async def addnews():
 
 @app.route('/news')
 @app.route('/news/<article>',methods=['GET','POST'])
-async def news(article=None):
+def news(article=None):
     owner = False
     unknow = True
     if article:
@@ -459,7 +459,7 @@ async def news(article=None):
 
 
 @app.route('/news/comment/<article>',methods=['POST'])
-async def comment(article):
+def comment(article):
     if 'id_no' in session:
         id_no = str(escape(session['id_no']))
         message = request.form['comment']
@@ -473,7 +473,7 @@ async def comment(article):
 
 @app.route('/editnews')
 @app.route('/editnews/<article>', methods = ['GET','POST'])
-async def editnews(article=None):
+def editnews(article=None):
     if 'id_no' in session:
       if article:
         if request.method == 'POST':
@@ -497,7 +497,7 @@ async def editnews(article=None):
 
 
 @app.route('/contact',methods=['GET','POST'])
-async def contact():
+def contact():
     if request.method == 'POST':
         name = request.form['name']
         email = request.form['email']
@@ -510,7 +510,7 @@ async def contact():
 
 
 @app.route('/news/delete/<article>')
-async def deletenews(article):
+def deletenews(article):
     if 'id_no' in session :
         id_no = str(escape(session['id_no']))
         Article = News.query.filter_by(News_ID = article,User_ID = id_no).first()
@@ -525,7 +525,7 @@ async def deletenews(article):
 
 
 @app.route('/chats/<friend>')
-async def chats(friend):
+def chats(friend):
     if 'id_no' in session:
         Friend = Profile_info.query.filter_by(ID_Number = friend).first()
         return render_template('chats.html',Friend=Friend)
